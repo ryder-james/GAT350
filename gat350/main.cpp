@@ -14,38 +14,47 @@
 const float kWidth = 800.0f;
 const float kHeight = 600.0f;
 
-const GLfloat cube_vertices[] = {
-	// front
-	-1.0, -1.0,  1.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-	 1.0, -1.0,  1.0, 0.0, 1.0, 0.0, 1.0, 0.0,
-	 1.0,  1.0,  1.0, 0.0, 0.0, 1.0, 1.0, 1.0,
-	-1.0,  1.0,  1.0, 1.0, 1.0, 1.0, 0.0, 1.0,
-	// back
-	-1.0, -1.0, -1.0, 1.0, 0.0, 0.0, 1.0, 1.0,
-	 1.0, -1.0, -1.0, 0.0, 1.0, 0.0, 0.0, 1.0,
-	 1.0,  1.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-	-1.0,  1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 0.0
+static float cube_vertices[] = {
+	// Front
+	-1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+	 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+	 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+	-1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+	// Right
+	 1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,
+	 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,
+	 1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f,
+	 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f,
+	 // Back
+	 -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
+	 -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
+	  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
+	  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
+	  // Left
+	  -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f,
+	  -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f,
+	  -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f,
+	  -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f,
+	  // Bottom
+	  -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,
+	  -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,
+	   1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,
+	   1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,
+	   // Top
+	   -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+		1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+		1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+	   -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f
 };
 
-GLushort cube_elements[] = {
-	// front
-	0, 1, 2,
-	2, 3, 0,
-	// right
-	1, 5, 6,
-	6, 2, 1,
-	// back
-	7, 6, 5,
-	5, 4, 7,
-	// left
-	4, 0, 3,
-	3, 7, 4,
-	// bottom
-	4, 5, 1,
-	1, 0, 4,
-	// top
-	3, 2, 6,
-	6, 7, 3
+static GLushort cube_elements[] =
+{
+	 0,  1,  2,  0,  2,  3,
+	 4,  5,  6,  4,  6,  7,
+	 8,  9, 10,  8, 10, 11,
+	12, 13, 14, 12, 14, 15,
+	16, 17, 18, 16, 18, 19,
+	20, 21, 22, 20, 22, 23
 };
 
 std::shared_ptr<Input> input = std::make_shared<Input>();
@@ -82,8 +91,8 @@ int main(int argc, char** argv) {
 
 #pragma region Shaders
 	Program program;
-	program.CreateShaderFromFile("shaders/texture_unlit.vert", GL_VERTEX_SHADER);
-	program.CreateShaderFromFile("shaders/texture_unlit.frag", GL_FRAGMENT_SHADER);
+	program.CreateShaderFromFile("shaders/basic_lit.vert", GL_VERTEX_SHADER);
+	program.CreateShaderFromFile("shaders/basic_lit.frag", GL_FRAGMENT_SHADER);
 	program.Link();
 	program.Use();
 #pragma endregion
@@ -92,11 +101,9 @@ int main(int argc, char** argv) {
 	VertexIndexArray vertex_array;
 	vertex_array.CreateBuffer(VertexArray::MULTI, sizeof(cube_vertices), sizeof(cube_vertices) / sizeof(GLfloat), (void*)cube_vertices);
 	vertex_array.CreateIndexBuffer(GL_UNSIGNED_SHORT, sizeof(cube_elements) / sizeof(GLushort), (void*)cube_elements);
-	vertex_array.SetAttribute(VertexArray::POSITION, 3, 8 * sizeof(GLfloat), 0);
-	vertex_array.SetAttribute(VertexArray::COLOR, 3, 8 * sizeof(GLfloat), 3 * sizeof(GLfloat));
-	vertex_array.SetAttribute(VertexArray::TEXCOORD, 2, 8 * sizeof(GLfloat), 6 * sizeof(GLfloat));
+	vertex_array.SetAttribute(VertexArray::POSITION, 3, 6 * sizeof(GLfloat), 0);
+	vertex_array.SetAttribute(VertexArray::NORMAL, 3, 6 * sizeof(GLfloat), 3 * sizeof(GLfloat));
 #pragma endregion
-
 
 #pragma region Texture Loading
 	int width, height, bpp;
@@ -133,6 +140,14 @@ int main(int argc, char** argv) {
 	delete data;
 #pragma endregion
 
+#pragma region Lighting
+	glm::vec3 ambient(0.3f, 0.0f, 0.0f);
+	program.SetUniform("ambient", ambient);
+
+	glm::vec3 light_pos(5.0f);
+#pragma endregion
+
+#pragma region Cube/Camera Transforms
 	glm::mat4 mx_translate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
 	glm::mat4 mx_rotate = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 mx_projection = glm::perspective(glm::radians(45.0f), kWidth / kHeight, 0.01f, 1000.0f);
@@ -141,6 +156,7 @@ int main(int argc, char** argv) {
 	glm::mat4 mx_view = glm::lookAt(eye, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	glm::mat4 mx_model = glm::mat4(1.0f);
+#pragma endregion
 
 	bool quit = false;
 	while (!quit) {
@@ -166,16 +182,19 @@ int main(int argc, char** argv) {
 		eye = eye + translate * g_timer.dt;
 		mx_view = glm::lookAt(eye, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		//glm::mat4 mx = mx_projection * mx_view * mx_model;
-
 		mx_translate = glm::translate(mx_translate, translate * g_timer.dt);
 		mx_rotate = glm::rotate(mx_rotate, glm::radians(45.0f) * g_timer.dt, glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 mx_model = mx_translate * mx_rotate;
-		glm::mat4 mx = mx_projection * mx_view * mx_model;
-		program.SetUniform("mx", mx);
+
+		glm::mat4 mv_mx = mx_view * mx_model;
+		glm::mat4 mvp_mx = mx_projection * mv_mx;
+
+		program.SetUniform("mv_matrix", mv_mx);
+		program.SetUniform("mvp_matrix", mvp_mx);
+
+		program.SetUniform("light_pos", mx_view* glm::vec4(light_pos, 1.0));
 
 		renderer->ClearBuffer();
-		vertex_array.Bind();
 		vertex_array.Draw();
 		renderer->SwapBuffer();
 	}

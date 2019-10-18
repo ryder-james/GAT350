@@ -180,12 +180,8 @@
     <ClInclude Include="engine\renderer\vertex_index_array.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="builds\assets\shaders\basic.frag" />
-    <None Include="builds\assets\shaders\basic.vert" />
-    <None Include="builds\assets\shaders\texture.frag" />
-    <None Include="builds\assets\shaders\texture.vert" />
-    <None Include="builds\assets\shaders\texture_unlit.frag" />
-    <None Include="builds\assets\shaders\texture_unlit.vert" />
+    <None Include="builds\assets\shaders\basic_lit.frag" />
+    <None Include="builds\assets\shaders\basic_lit.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
