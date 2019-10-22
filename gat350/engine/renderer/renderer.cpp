@@ -18,7 +18,7 @@ bool Renderer::Initialize(u32 width, u32 height, bool fullscreen) {
 	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 	SDL_GL_SetSwapInterval(1);
 
-	SDL_GLContext context = SDL_GL_CreateContext(window_);
+	context_ = SDL_GL_CreateContext(window_);
 	if (!gladLoadGL()) {
 		return false;
 	}

@@ -18,7 +18,7 @@ void VertexArray::CreateBuffer(eAttrib attrib, GLsizei size, GLsizei num_vertex,
 	GLuint vbo = 0;
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(size), data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 
 	VertexBuffer vertex_buffer = { attrib, vbo, num_vertex };
 	vertex_buffers_.push_back(vertex_buffer);

@@ -9,10 +9,12 @@
 #include "engine/renderer/texture.h"
 #include "engine/renderer/program.h"
 #include "engine/renderer/renderer.h"
+#include "engine/renderer/material.h"
+#include "engine/renderer/light.h"
 #include "engine/renderer/vertex_index_array.h"
 
-const float kWidth = 800.0f;
-const float kHeight = 600.0f;
+const u32 kWidth = 800;
+const u32 kHeight = 600;
 
 static float cube_vertices[] = {
 	// Front
@@ -25,26 +27,26 @@ static float cube_vertices[] = {
 	 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,
 	 1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f,
 	 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f,
-	 // Back
-	 -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
-	 -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
-	  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
-	  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
-	  // Left
-	  -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f,
-	  -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f,
-	  -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f,
-	  -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f,
-	  // Bottom
-	  -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,
-	  -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,
-	   1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,
-	   1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,
-	   // Top
-	   -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-		1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-		1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-	   -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f
+	// Back
+	-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
+	-1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
+	 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
+	 1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
+	// Left
+	-1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f,
+	-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f,
+	-1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f,
+	-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f,
+	// Bottom
+	-1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,
+	-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,
+	 1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,
+	 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,
+	// Top
+	-1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+	 1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+	 1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+	-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f
 };
 
 static GLushort cube_elements[] =
@@ -88,15 +90,6 @@ glm::vec3 TranslateFromInput() {
 int main(int argc, char** argv) {
 	init();
 
-
-#pragma region Shaders
-	Program program;
-	program.CreateShaderFromFile("shaders/basic_lit.vert", GL_VERTEX_SHADER);
-	program.CreateShaderFromFile("shaders/basic_lit.frag", GL_FRAGMENT_SHADER);
-	program.Link();
-	program.Use();
-#pragma endregion
-
 #pragma region VIA Initialization
 	VertexIndexArray vertex_array;
 	vertex_array.CreateBuffer(VertexArray::MULTI, sizeof(cube_vertices), sizeof(cube_vertices) / sizeof(GLfloat), (void*)cube_vertices);
@@ -105,54 +98,41 @@ int main(int argc, char** argv) {
 	vertex_array.SetAttribute(VertexArray::NORMAL, 3, 6 * sizeof(GLfloat), 3 * sizeof(GLfloat));
 #pragma endregion
 
-#pragma region Texture Loading
-	int width, height, bpp;
+#pragma region Material/Lighting
+	Material material;
+	material.program = new Program();
+	material.program->CreateShaderFromFile("shaders/gouraud.vert", GL_VERTEX_SHADER);
+	material.program->CreateShaderFromFile("shaders/gouraud.frag", GL_FRAGMENT_SHADER);
+	material.program->Link();
+	material.program->Use();
 
-	GLuint textures[2];
-	glGenTextures(2, textures);
+	material.ambient = glm::vec3(1.0f);
+	material.diffuse = glm::vec3(0.2f, 0.2f, 1.0f);
+	material.specular = glm::vec3(1.0f);
+	material.shininess = 32.0f;
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	material.Update();
+	material.Use();
 
-	u8* data = Texture::LoadImage("textures/crate.bmp", width, height, bpp);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	delete data;
-
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, textures[1]);
-
-	data = Texture::LoadImage("textures/nc.bmp", width, height, bpp);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	
-	delete data;
+	Light light;
+	light.position = glm::vec4(5.0f, 2.0f, 5.0f, 1.0f);
+	light.ambient = glm::vec3(0.1f);
+	light.diffuse = glm::vec3(1.0f);
+	light.specular = glm::vec3(1.0f);
 #pragma endregion
 
-#pragma region Lighting
-	glm::vec3 ambient(0.3f, 0.0f, 0.0f);
-	program.SetUniform("ambient", ambient);
-
-	glm::vec3 light_pos(5.0f);
+#pragma region Texture Loading
+	Texture texture;
+	texture.CreateTexture("textures/nc.bmp");
+	texture.Bind();
 #pragma endregion
 
 #pragma region Cube/Camera Transforms
 	glm::mat4 mx_translate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
 	glm::mat4 mx_rotate = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 mx_projection = glm::perspective(glm::radians(45.0f), kWidth / kHeight, 0.01f, 1000.0f);
+	glm::mat4 mx_projection = glm::perspective(glm::radians(45.0f), kWidth / (float)kHeight, 0.01f, 1000.0f);
 
-	glm::vec3 eye = glm::vec3(0.0f, 0.0f, 15.0f);
+	glm::vec3 eye = glm::vec3(0.0f, 0.0f, 5.0f);
 	glm::mat4 mx_view = glm::lookAt(eye, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	glm::mat4 mx_model = glm::mat4(1.0f);
@@ -189,16 +169,17 @@ int main(int argc, char** argv) {
 		glm::mat4 mv_mx = mx_view * mx_model;
 		glm::mat4 mvp_mx = mx_projection * mv_mx;
 
-		program.SetUniform("mv_matrix", mv_mx);
-		program.SetUniform("mvp_matrix", mvp_mx);
+		material.program->SetUniform("mv_matrix", mv_mx);
+		material.program->SetUniform("mvp_matrix", mvp_mx);
 
-		program.SetUniform("light_pos", mx_view* glm::vec4(light_pos, 1.0));
+		light.SetShader(material.program, mx_view);
 
 		renderer->ClearBuffer();
 		vertex_array.Draw();
 		renderer->SwapBuffer();
 	}
 
+	material.Destroy();
 	input->Shutdown();
 	renderer->Shutdown();
 

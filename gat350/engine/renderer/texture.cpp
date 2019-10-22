@@ -1,5 +1,44 @@
 #include "texture.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
+
+Texture::~Texture() {}
+
+void Texture::CreateTexture(const std::string& filename, GLenum type, GLuint unit) {
+	type_ = type;
+	unit_ = unit;
+
+	int width, height, channels;
+
+	u8* data = LoadImage(filename, width, height, channels);
+	ASSERT(data);
+
+	glGenTextures(1, &texture_);
+	Bind();
+
+	GLenum format = (channels == 4) ? GL_RGBA : GL_RGB;
+	glTexImage2D(type, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+
+	glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	stbi_image_free(data);
+}
+
+void Texture::Bind() {
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture_);
+}
+
+#ifdef STB_IMAGE_IMPLEMENTATION
+u8* Texture::LoadImage(const std::string& filename, int& width, int& height, int& channels) {
+	stbi_set_flip_vertically_on_load(true);
+	u8* image = stbi_load(filename.c_str(), &width, &height, &channels, 0);
+
+	return image;
+}
+#else
 u8* Texture::LoadImage(const std::string& filename, int& width, int& height, int& bpp) {
 	u8* image = nullptr;
 	
@@ -26,3 +65,4 @@ u8* Texture::LoadImage(const std::string& filename, int& width, int& height, int
 
 	return image;
 }
+#endif
