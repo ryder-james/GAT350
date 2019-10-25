@@ -3,7 +3,9 @@
 #include "stb_image.h"
 
 
-Texture::~Texture() {}
+Texture::~Texture() {
+
+}
 
 void Texture::CreateTexture(const std::string& filename, GLenum type, GLuint unit) {
 	type_ = type;

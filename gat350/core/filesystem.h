@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 
 namespace filesystem {
 	bool file_exists(const char* filename);

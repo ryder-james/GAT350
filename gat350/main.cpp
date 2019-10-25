@@ -4,7 +4,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "engine/engine.h"
 #include "engine/input/input.h"
 #include "engine/renderer/texture.h"
 #include "engine/renderer/program.h"
@@ -12,52 +11,11 @@
 #include "engine/renderer/material.h"
 #include "engine/renderer/light.h"
 #include "engine/renderer/vertex_index_array.h"
+#include "engine/renderer/mesh.h"
+#include "engine/math/math.h"
 
 const u32 kWidth = 800;
 const u32 kHeight = 600;
-
-static float cube_vertices[] = {
-	// Front
-	-1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-	 1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-	 1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-	-1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-	// Right
-	 1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,
-	 1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,
-	 1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f,
-	 1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f,
-	// Back
-	-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
-	-1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
-	 1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
-	 1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
-	// Left
-	-1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f,
-	-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f,
-	-1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f,
-	-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f,
-	// Bottom
-	-1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,
-	-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,
-	 1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,
-	 1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,
-	// Top
-	-1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-	 1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-	 1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-	-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f
-};
-
-static GLushort cube_elements[] =
-{
-	 0,  1,  2,  0,  2,  3,
-	 4,  5,  6,  4,  6,  7,
-	 8,  9, 10,  8, 10, 11,
-	12, 13, 14, 12, 14, 15,
-	16, 17, 18, 16, 18, 19,
-	20, 21, 22, 20, 22, 23
-};
 
 std::shared_ptr<Input> input = std::make_shared<Input>();
 std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>();
@@ -87,29 +45,64 @@ glm::vec3 TranslateFromInput() {
 	return translate;
 }
 
+void GenerateMesh(VertexArray& vertex_array, std::string mesh_name) {
+	std::vector<glm::vec3> positions;
+	std::vector<glm::vec3> normals;
+	std::vector<glm::vec2> texcoords;
+
+	std::string s = "meshes/" + mesh_name + ".obj";
+
+	Mesh::Load(s, positions, normals, texcoords);
+
+	//glm::mat3 rotate = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	//math::transform(positions, rotate);
+	//math::transform(normals, rotate);
+	if (normals.empty()) {
+		for (size_t i = 0; i < positions.size() - 2; i += 3) {
+			glm::vec3 normal = math::calculate_normal(positions[i], positions[i + 1], positions[i + 2]);
+			normals.push_back(normal);
+			normals.push_back(normal);
+			normals.push_back(normal);
+		}
+	}
+
+	if (!positions.empty()) {
+		vertex_array.CreateBuffer(VertexArray::POSITION, static_cast<GLsizei>(positions.size() * sizeof(glm::vec3)), static_cast<GLsizei>(positions.size()), (void*)& positions[0]);
+		vertex_array.SetAttribute(VertexArray::POSITION, 3, 0, 0);
+	}
+
+	if (!normals.empty()) {
+		vertex_array.CreateBuffer(VertexArray::NORMAL, static_cast<GLsizei>(normals.size() * sizeof(glm::vec3)), static_cast<GLsizei>(normals.size()), (void*)& normals[0]);
+		vertex_array.SetAttribute(VertexArray::NORMAL, 3, 0, 0);
+	} 
+	if (!texcoords.empty()) {
+		vertex_array.CreateBuffer(VertexArray::TEXCOORD, static_cast<GLsizei>(texcoords.size() * sizeof(glm::vec2)), static_cast<GLsizei>(texcoords.size()), (void*)& texcoords[0]);
+		vertex_array.SetAttribute(VertexArray::TEXCOORD, 2, 0, 0);
+	}
+}
+
 int main(int argc, char** argv) {
 	init();
 
-#pragma region VIA Initialization
-	VertexIndexArray vertex_array;
-	vertex_array.CreateBuffer(VertexArray::MULTI, sizeof(cube_vertices), sizeof(cube_vertices) / sizeof(GLfloat), (void*)cube_vertices);
-	vertex_array.CreateIndexBuffer(GL_UNSIGNED_SHORT, sizeof(cube_elements) / sizeof(GLushort), (void*)cube_elements);
-	vertex_array.SetAttribute(VertexArray::POSITION, 3, 6 * sizeof(GLfloat), 0);
-	vertex_array.SetAttribute(VertexArray::NORMAL, 3, 6 * sizeof(GLfloat), 3 * sizeof(GLfloat));
-#pragma endregion
+	VertexArray vertex_array;
+	GenerateMesh(vertex_array, "ogre");
 
 #pragma region Material/Lighting
 	Material material;
 	material.program = new Program();
-	material.program->CreateShaderFromFile("shaders/gouraud.vert", GL_VERTEX_SHADER);
-	material.program->CreateShaderFromFile("shaders/gouraud.frag", GL_FRAGMENT_SHADER);
+	material.program->CreateShaderFromFile("shaders/texture_phong.vert", GL_VERTEX_SHADER);
+	material.program->CreateShaderFromFile("shaders/texture_phong.frag", GL_FRAGMENT_SHADER);
 	material.program->Link();
 	material.program->Use();
 
-	material.ambient = glm::vec3(1.0f);
-	material.diffuse = glm::vec3(0.2f, 0.2f, 1.0f);
-	material.specular = glm::vec3(1.0f);
-	material.shininess = 32.0f;
+	material.ambient = glm::vec3(0.2f);
+	material.diffuse = glm::vec3(1.0f);
+	material.specular = glm::vec3(0.2f);
+	material.shininess = 8.0f;
+
+	Texture* texture = new Texture();
+	texture->CreateTexture("textures/ogre/diffuse.bmp");
+	material.textures.push_back(texture);
 
 	material.Update();
 	material.Use();
@@ -121,12 +114,6 @@ int main(int argc, char** argv) {
 	light.specular = glm::vec3(1.0f);
 #pragma endregion
 
-#pragma region Texture Loading
-	Texture texture;
-	texture.CreateTexture("textures/nc.bmp");
-	texture.Bind();
-#pragma endregion
-
 #pragma region Cube/Camera Transforms
 	glm::mat4 mx_translate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
 	glm::mat4 mx_rotate = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -134,8 +121,9 @@ int main(int argc, char** argv) {
 
 	glm::vec3 eye = glm::vec3(0.0f, 0.0f, 5.0f);
 	glm::mat4 mx_view = glm::lookAt(eye, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
+	
 	glm::mat4 mx_model = glm::mat4(1.0f);
+
 #pragma endregion
 
 	bool quit = false;
@@ -159,7 +147,7 @@ int main(int argc, char** argv) {
 
 		glm::vec3 translate = TranslateFromInput();
 
-		eye = eye + translate * g_timer.dt;
+		//eye = eye + translate * g_timer.dt;
 		mx_view = glm::lookAt(eye, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 		mx_translate = glm::translate(mx_translate, translate * g_timer.dt);

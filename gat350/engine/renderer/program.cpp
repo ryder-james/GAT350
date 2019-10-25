@@ -27,14 +27,14 @@ Program::~Program() {
 
 void Program::CreateShaderFromFile(const std::string& filename, GLenum shader_type) {
 	// create program if not already created
-	if (program_ == 0) {
+	if (!program_) {
 		program_ = glCreateProgram();
 	}
 
 	// get shader source from file
 	std::string source;
 	bool success = filesystem::read_file(filename.c_str(), source);
-	if (success == false) {
+	if (!success) {
 		SDL_Log("Error: Failed to open file (%s).", filename.c_str());
 	}
 

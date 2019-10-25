@@ -146,8 +146,10 @@
     <ClCompile Include="core\string.cpp" />
     <ClCompile Include="core\timer.cpp" />
     <ClCompile Include="engine\input\input.cpp" />
+    <ClCompile Include="engine\math\math.cpp" />
     <ClCompile Include="engine\renderer\light.cpp" />
     <ClCompile Include="engine\renderer\material.cpp" />
+    <ClCompile Include="engine\renderer\mesh.cpp" />
     <ClCompile Include="engine\renderer\program.cpp" />
     <ClCompile Include="engine\renderer\renderer.cpp" />
     <ClCompile Include="engine\renderer\texture.cpp" />
@@ -175,8 +177,10 @@
     <ClInclude Include="core\types.h" />
     <ClInclude Include="engine\engine.h" />
     <ClInclude Include="engine\input\input.h" />
+    <ClInclude Include="engine\math\math.h" />
     <ClInclude Include="engine\renderer\light.h" />
     <ClInclude Include="engine\renderer\material.h" />
+    <ClInclude Include="engine\renderer\mesh.h" />
     <ClInclude Include="engine\renderer\program.h" />
     <ClInclude Include="engine\renderer\renderer.h" />
     <ClInclude Include="engine\renderer\texture.h" />
@@ -184,10 +188,8 @@
     <ClInclude Include="engine\renderer\vertex_index_array.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="builds\assets\shaders\basic_lit.frag" />
-    <None Include="builds\assets\shaders\basic_lit.vert" />
-    <None Include="builds\assets\shaders\gouraud.frag" />
-    <None Include="builds\assets\shaders\gouraud.vert" />
+    <None Include="builds\assets\shaders\texture_phong.frag" />
+    <None Include="builds\assets\shaders\texture_phong.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
