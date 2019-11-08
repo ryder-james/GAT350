@@ -29,8 +29,8 @@ void Texture::CreateTexture(const std::string& filename, GLenum type, GLuint uni
 }
 
 void Texture::Bind() {
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture_);
+	glActiveTexture(unit_);
+	glBindTexture(type_, texture_);
 }
 
 #ifdef STB_IMAGE_IMPLEMENTATION

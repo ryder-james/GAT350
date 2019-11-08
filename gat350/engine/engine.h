@@ -1,12 +1,11 @@
 #pragma once
 
 #include "../core/core.h"
+#include "math/math.h"
 
 #include <sdl.h>
 #include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <imgui.h>
 
 #include <string>
 #include <map>

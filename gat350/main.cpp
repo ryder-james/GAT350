@@ -13,14 +13,19 @@
 #include "engine/renderer/vertex_index_array.h"
 #include "engine/renderer/mesh.h"
 #include "engine/math/math.h"
+#include "engine/renderer/gui.h"
 
-const u32 kWidth = 800;
-const u32 kHeight = 600;
+const u32 kWidth = 1280;
+const u32 kHeight = 720;
+
+int steps = 4;
 
 std::shared_ptr<Input> input = std::make_shared<Input>();
 std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>();
 
 void init() {
+	Name::AllocNames();
+
 	filesystem::set_current_path("assets");
 
 	int result = SDL_Init(SDL_INIT_VIDEO);
@@ -30,6 +35,8 @@ void init() {
 
 	input->Initialize();
 	renderer->Initialize(kWidth, kHeight);
+
+	GUI::Initialize(renderer.get());
 }
 
 glm::vec3 TranslateFromInput() {
@@ -85,36 +92,39 @@ int main(int argc, char** argv) {
 	init();
 
 	VertexArray vertex_array;
-	GenerateMesh(vertex_array, "ogre");
+	GenerateMesh(vertex_array, "suzanne");
+	Transform transform;
 
-#pragma region Material/Lighting
+	Light light("light");
 	Material material;
-	material.program = new Program();
-	material.program->CreateShaderFromFile("shaders/texture_phong.vert", GL_VERTEX_SHADER);
-	material.program->CreateShaderFromFile("shaders/texture_phong.frag", GL_FRAGMENT_SHADER);
-	material.program->Link();
-	material.program->Use();
+	std::unique_ptr<Program> shader = std::make_unique<Program>();
+
+	shader->CreateShaderFromFile("shaders/gouraud.vert", GL_VERTEX_SHADER);
+	shader->CreateShaderFromFile("shaders/gouraud.frag", GL_FRAGMENT_SHADER);
+	shader->Link();
+	shader->Use();
 
 	material.ambient = glm::vec3(0.2f);
 	material.diffuse = glm::vec3(1.0f);
 	material.specular = glm::vec3(0.2f);
 	material.shininess = 8.0f;
 
-	Texture* texture = new Texture();
-	texture->CreateTexture("textures/ogre/diffuse.bmp");
-	material.textures.push_back(texture);
+	std::unique_ptr<Texture> texture = std::make_unique<Texture>();
+	texture->CreateTexture("textures/crate.bmp");
+	material.textures.push_back(std::move(texture));
 
-	material.Update();
+	std::unique_ptr<Texture> spec_map = std::make_unique<Texture>();
+	spec_map->CreateTexture("textures/crate_specular.bmp", GL_TEXTURE_2D, GL_TEXTURE1);
+	material.textures.push_back(std::move(spec_map));
+
+	material.SetShader(shader.get());
 	material.Use();
 
-	Light light;
-	light.position = glm::vec4(5.0f, 2.0f, 5.0f, 1.0f);
+	light.GetTransform().translation = glm::vec3(10.0f, 2.0f, 10.0f);
 	light.ambient = glm::vec3(0.1f);
 	light.diffuse = glm::vec3(1.0f);
 	light.specular = glm::vec3(1.0f);
-#pragma endregion
 
-#pragma region Cube/Camera Transforms
 	glm::mat4 mx_translate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
 	glm::mat4 mx_rotate = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 mx_projection = glm::perspective(glm::radians(45.0f), kWidth / (float)kHeight, 0.01f, 1000.0f);
@@ -123,8 +133,6 @@ int main(int argc, char** argv) {
 	glm::mat4 mx_view = glm::lookAt(eye, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	
 	glm::mat4 mx_model = glm::mat4(1.0f);
-
-#pragma endregion
 
 	bool quit = false;
 	while (!quit) {
@@ -147,31 +155,55 @@ int main(int argc, char** argv) {
 
 		glm::vec3 translate = TranslateFromInput();
 
+		transform.translation += translate * g_timer.dt;
+		transform.rotation = transform.rotation * glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0.0f, 1.0f, 0.0f));
+
 		//eye = eye + translate * g_timer.dt;
 		mx_view = glm::lookAt(eye, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		mx_translate = glm::translate(mx_translate, translate * g_timer.dt);
-		mx_rotate = glm::rotate(mx_rotate, glm::radians(45.0f) * g_timer.dt, glm::vec3(0.0f, 1.0f, 0.0f));
+		//mx_translate = glm::translate(mx_translate, translate * g_timer.dt);
+		//mx_rotate = glm::rotate(mx_rotate, glm::radians(45.0f) * g_timer.dt, glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 mx_model = mx_translate * mx_rotate;
 
-		glm::mat4 mv_mx = mx_view * mx_model;
+		glm::mat4 mv_mx = mx_view * transform.GetMatrix();
 		glm::mat4 mvp_mx = mx_projection * mv_mx;
 
-		material.program->SetUniform("mv_matrix", mv_mx);
-		material.program->SetUniform("mvp_matrix", mvp_mx);
+		shader->SetUniform("mv_matrix", mv_mx);
+		shader->SetUniform("mvp_matrix", mvp_mx);
+		//shader->SetUniform("steps", steps);
+		shader->SetUniform("fog.min_distance", 10.0f);
+		shader->SetUniform("fog.max_distance", 30.0f);
+		shader->SetUniform("fog.color", glm::vec3(0.85f));
 
-		light.SetShader(material.program, mx_view);
+		light.SetShader(shader.get(), mx_view);
+		material.SetShader(shader.get());
+
+		GUI::Update(event);
+		GUI::Begin(renderer.get());
+
+		ImGui::Text("Hello World!");
+		light.Edit();
+		material.Edit();
+		//ImGui::Button("Pause");
+		//ImGui::SliderInt("Steps", &steps, 1, 16);
+
+		GUI::End();
 
 		renderer->ClearBuffer();
+		GUI::Draw();
 		vertex_array.Draw();
 		renderer->SwapBuffer();
 	}
+
+	GUI::Shutdown();
 
 	material.Destroy();
 	input->Shutdown();
 	renderer->Shutdown();
 
 	SDL_Quit();
+
+	Name::FreeNames();
 
 	return 0;
 }

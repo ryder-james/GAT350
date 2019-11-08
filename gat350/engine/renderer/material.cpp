@@ -1,22 +1,29 @@
 #include "material.h"
 
 void Material::Destroy() {
-	if (program) delete program;
-	for (Texture* texture : textures) {
-		delete texture;
-	}
 }
 
-void Material::Update() {
-	program->SetUniform("material.ambient", ambient);
-	program->SetUniform("material.diffuse", diffuse);
-	program->SetUniform("material.specular", specular);
-	program->SetUniform("material.shininess", shininess);
+void Material::SetShader(Program* shader) {
+	shader->Use();
+
+	shader->SetUniform("material.ambient", ambient);
+	shader->SetUniform("material.diffuse", diffuse);
+	shader->SetUniform("material.specular", specular);
+	shader->SetUniform("material.shininess", shininess);
 }
 
 void Material::Use() {
-	for (Texture* texture : textures) {
+	for (auto texture : textures) {
 		texture->Bind();
 	}
-	program->Use();
+}
+
+void Material::Edit() {
+	ImGui::PushID("Material");
+	ImGui::Text("Material");
+	ImGui::ColorEdit3("Ambient", (float*)&ambient);
+	ImGui::ColorEdit3("Diffuse", (float*)&diffuse);
+	ImGui::ColorEdit3("Specular", (float*)&specular);
+	ImGui::SliderFloat("Shininess", &shininess, 1.0f, 128.0f);
+	ImGui::PopID();
 }

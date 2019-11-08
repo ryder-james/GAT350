@@ -42,12 +42,30 @@
     <Filter Include="source\engine\math">
       <UniqueIdentifier>{5e66d8d4-83df-406b-a31b-07acf9b9200d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="external">
+      <UniqueIdentifier>{d7b38933-3880-4b9a-84f3-fe0db0b3afcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\engine\framework">
+      <UniqueIdentifier>{904f34c9-12a8-47a1-bf0e-fa106495c322}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="headers\engine\framework">
+      <UniqueIdentifier>{180b8941-db81-49d8-8061-eb4876c4b498}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\game">
+      <UniqueIdentifier>{f9cc3806-eb98-4ae2-b5e8-90df76195ac6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="headers\game">
+      <UniqueIdentifier>{04260afc-0bc2-444b-a3c4-1633f3818f00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="headers\framework">
+      <UniqueIdentifier>{c4a014f4-9522-45a3-83f7-7749969dcb9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\framework">
+      <UniqueIdentifier>{517459a2-5571-40bf-a3b6-2473841bef91}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\external\glad\src\glad.c">
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="core\assert.cpp">
@@ -106,6 +124,30 @@
     </ClCompile>
     <ClCompile Include="engine\renderer\mesh.cpp">
       <Filter>source\engine\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\external\glad\src\glad.c">
+      <Filter>external</Filter>
+    </ClCompile>
+    <ClCompile Include="..\external\imgui\imgui_widgets.cpp">
+      <Filter>external</Filter>
+    </ClCompile>
+    <ClCompile Include="..\external\imgui\imgui.cpp">
+      <Filter>external</Filter>
+    </ClCompile>
+    <ClCompile Include="..\external\imgui\imgui_draw.cpp">
+      <Filter>external</Filter>
+    </ClCompile>
+    <ClCompile Include="..\external\imgui\examples\imgui_impl_opengl3.cpp">
+      <Filter>external</Filter>
+    </ClCompile>
+    <ClCompile Include="..\external\imgui\examples\imgui_impl_sdl.cpp">
+      <Filter>external</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\renderer\gui.cpp">
+      <Filter>source\engine\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\math\transform.cpp">
+      <Filter>source\engine\math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -193,12 +235,57 @@
     <ClInclude Include="engine\math\math.h">
       <Filter>headers\engine\math</Filter>
     </ClInclude>
+    <ClInclude Include="engine\renderer\gui.h">
+      <Filter>headers\engine\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\math\transform.h">
+      <Filter>headers\engine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\framework\scene.h">
+      <Filter>headers\engine\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\framework\system.h">
+      <Filter>headers\engine\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\framework\actor.h">
+      <Filter>headers\engine\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\framework\object.h">
+      <Filter>headers\engine\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\framework\resource.h">
+      <Filter>headers\engine\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\factory.h">
+      <Filter>headers\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\object_manager.h">
+      <Filter>headers\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\def.h">
+      <Filter>headers\engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="builds\assets\shaders\texture_phong.frag">
       <Filter>shaders</Filter>
     </None>
     <None Include="builds\assets\shaders\texture_phong.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="builds\assets\shaders\toon.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="builds\assets\shaders\texture_phong_fog.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="builds\assets\shaders\texture_phong_specular.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="builds\assets\shaders\gouraud.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="builds\assets\shaders\gouraud.frag">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>
