@@ -65,9 +65,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
     <ClCompile Include="core\assert.cpp">
       <Filter>source\core</Filter>
     </ClCompile>
@@ -148,6 +145,15 @@
     </ClCompile>
     <ClCompile Include="engine\math\transform.cpp">
       <Filter>source\engine\math</Filter>
+    </ClCompile>
+    <ClCompile Include="game\main.cpp">
+      <Filter>source\game</Filter>
+    </ClCompile>
+    <ClCompile Include="game\game_scene.cpp">
+      <Filter>source\game</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\engine.cpp">
+      <Filter>source\engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -264,6 +270,9 @@
     </ClInclude>
     <ClInclude Include="engine\def.h">
       <Filter>headers\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="game\game_scene.h">
+      <Filter>headers\game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

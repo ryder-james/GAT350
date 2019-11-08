@@ -1,8 +1,8 @@
 #pragma once
 
-#include "..//engine.h"
+#include "../framework/system.h"
 
-class Input {
+class Input : public System {
 public:
 	Input() {}
 	~Input() {}

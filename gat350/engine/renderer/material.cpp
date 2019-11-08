@@ -1,7 +1,6 @@
 #include "material.h"
 
-void Material::Destroy() {
-}
+Material::~Material() {}
 
 void Material::SetShader(Program* shader) {
 	shader->Use();
@@ -13,7 +12,7 @@ void Material::SetShader(Program* shader) {
 }
 
 void Material::Use() {
-	for (auto texture : textures) {
+	for (const auto& texture : textures) {
 		texture->Bind();
 	}
 }

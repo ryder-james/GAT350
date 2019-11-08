@@ -3,8 +3,7 @@
 
 class Renderer;
 
-namespace GUI
-{
+namespace GUI {
 	bool Initialize(Renderer* renderer);
 	void Shutdown();
 

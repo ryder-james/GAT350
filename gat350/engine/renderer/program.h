@@ -1,16 +1,10 @@
 #pragma once
-#include <sdl.h>
-#include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
-#include <string>
-#include <map>
-#include <vector>
+#include "../framework/resource.h"
 
-class Program {
+class Program : public Resource {
 public:
-	Program() {}
+	OBJECT_DECLARATION(Program, Resource)
 	~Program();
 
 public:
