@@ -16,12 +16,9 @@ public:
 
 	virtual bool Create(const Name& name) { name_ = name; return true; }
 
-	void SetName(const Name& name) { name_ = name; }
-	Name& GetName() { return name_; }
-
 	inline virtual void Edit() { ImGui::Text(name_.c_str()); }
 
-protected:
+public:
 	Name name_;
 	class Engine* engine_ = nullptr;
 };

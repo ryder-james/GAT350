@@ -2,6 +2,10 @@
 
 #include <glad/glad.h>
 
+bool Renderer::Initialize() {
+	return Initialize(1280, 720, false);
+}
+
 bool Renderer::Initialize(u32 width, u32 height, bool fullscreen) {
 	Uint32 flags = SDL_WINDOW_OPENGL; 
 	flags |= (fullscreen) ? SDL_WINDOW_FULLSCREEN : 0;
@@ -41,6 +45,10 @@ void Renderer::Shutdown() {
 void Renderer::ClearBuffer() {
 	glClearColor(0.85f, 0.85f, 0.85f, 0.5f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Renderer::Update() {
+
 }
 
 void Renderer::SwapBuffer() {

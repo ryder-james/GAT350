@@ -155,6 +155,15 @@
     <ClCompile Include="engine\engine.cpp">
       <Filter>source\engine</Filter>
     </ClCompile>
+    <ClCompile Include="engine\renderer\model.cpp">
+      <Filter>source\engine\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\renderer\camera.cpp">
+      <Filter>source\engine\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\framework\scene.cpp">
+      <Filter>source\engine\framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\assert.h">
@@ -273,6 +282,12 @@
     </ClInclude>
     <ClInclude Include="game\game_scene.h">
       <Filter>headers\game</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\renderer\model.h">
+      <Filter>headers\engine\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\renderer\camera.h">
+      <Filter>headers\engine\renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

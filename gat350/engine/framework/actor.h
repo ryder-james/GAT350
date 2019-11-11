@@ -7,13 +7,15 @@ public:
 	OBJECT_DECLARATION(Actor, Object)
 	virtual ~Actor() {}
 
-	Transform& GetTransform() { return transform_; }
+	virtual void Update() {}
+	virtual void Draw(GLenum primitive_type = GL_TRIANGLES) {}
 
 	virtual void Edit() {
 		Object::Edit();
 		transform_.Edit();
 	}
 
-protected:
+public:
 	Transform transform_;
+	class Scene* scene_ = nullptr;
 };

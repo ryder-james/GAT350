@@ -7,9 +7,9 @@
 #include "renderer/material.h"
 #include "renderer/light.h"
 #include "renderer/mesh.h"
-//#include "renderer/model.h"
+#include "renderer/model.h"
 #include "renderer/gui.h"
-//#include "renderer/camera.h"
+#include "renderer/camera.h"
 
 bool Engine::Initialize() {
 	// core
@@ -23,9 +23,9 @@ bool Engine::Initialize() {
 	}
 
 	// systems
-	std::unique_ptr<Input> input = std::make_unique<Input>(Input::GetClassName(), this);
-	input->Initialize();
-	systems_.push_back(std::move(input));
+	//std::unique_ptr<Input> input = std::make_unique<Input>(Input::GetClassName(), this);
+	//input->Initialize();
+	//systems_.push_back(std::move(input));
 
 	std::unique_ptr<Renderer> renderer = std::make_unique<Renderer>(Renderer::GetClassName(), this);
 	renderer->Initialize(1280, 720);
@@ -36,10 +36,10 @@ bool Engine::Initialize() {
 	// factory
 	factory_ = std::make_unique<object_factory_t>();
 	factory_->Register(Texture::GetClassName(), new Creator<Texture, Object>());
-	//factory_->Register(Model::GetClassName(), new Creator<Model, Object>());
+	factory_->Register(Model::GetClassName(), new Creator<Model, Object>());
 	factory_->Register(Program::GetClassName(), new Creator<Program, Object>());
 	factory_->Register(Material::GetClassName(), new Creator<Material, Object>());
-	//factory_->Register(Camera::GetClassName(), new Creator<Camera, Object>());
+	factory_->Register(Camera::GetClassName(), new Creator<Camera, Object>());
 	factory_->Register(Light::GetClassName(), new Creator<Light, Object>());
 
 	// resources
