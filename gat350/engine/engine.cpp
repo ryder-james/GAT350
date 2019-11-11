@@ -13,7 +13,7 @@
 
 bool Engine::Initialize() {
 	// core
-	filesystem::set_current_path("content");
+	filesystem::set_current_path("assets");
 	Name::AllocNames();
 
 	int result = SDL_Init(SDL_INIT_VIDEO);
