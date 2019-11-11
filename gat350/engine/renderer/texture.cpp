@@ -7,6 +7,12 @@ Texture::~Texture() {
 
 }
 
+bool Texture::Create(const Name& name) {
+	CreateTexture(name.c_str());
+
+	return true;
+}
+
 void Texture::CreateTexture(const std::string& filename, GLenum type, GLuint unit) {
 	type_ = type;
 	unit_ = unit;
