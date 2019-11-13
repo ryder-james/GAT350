@@ -30,7 +30,8 @@ layout (binding = 0) uniform sampler2D texture_sample;
 
 void main()
 {
-	vec3 vector_to_light = normalize(vec3(light.position) - fposition);
+	//vec3 vector_to_light = normalize(vec3(light.position) - fposition);
+	vec3 vector_to_light = normalize(vec3(10.0) - fposition);
 
 	// ambient
 	vec3 ambient = light.ambient * material.ambient;
@@ -38,6 +39,7 @@ void main()
 	// diffuse
 	float lDotN = max(0.0, dot(fnormal, vector_to_light));
 	vec3 diffuse = light.diffuse * material.diffuse * lDotN;
+	diffuse = vec3(lDotN);
 
 	// specular
 	vec3 specular = vec3(0.0);
