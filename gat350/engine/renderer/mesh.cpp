@@ -24,12 +24,12 @@ bool Mesh::Create(const Name& name) {
 }
 
 void Mesh::Draw(GLenum primitiveType) {
-	m_material->Use();
+	material_->Use();
 	vertex_array_.Draw(primitiveType);
 }
 
 void Mesh::SetShader(Program* shader) {
-	m_material->SetShader(shader);
+	material_->SetShader(shader);
 }
 
 bool Mesh::Load(const std::string& filename, std::vector<glm::vec3>& positions, std::vector<glm::vec3>& normals, std::vector<glm::vec2>& texcoords) {
