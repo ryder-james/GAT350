@@ -42,6 +42,15 @@ bool GameScene::Create(const Name& name) {
 	material->textures.push_back(texture);
 	engine_->Resources()->Add("material", std::move(material));
 
+	material = engine_->Factory()->Create<Material>(Material::GetClassName());
+	material->name_ = "material";
+	material->engine_ = engine_;
+	material->ambient = glm::vec3(1.0f);
+	material->diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
+	material->specular = glm::vec3(1.0f);
+	material->shininess = 128.0f;
+	engine_->Resources()->Add("debug_material", std::move(material));
+
 	// scene actors
 
 	// model
@@ -52,7 +61,7 @@ bool GameScene::Create(const Name& name) {
 	model->transform_.translation = glm::vec3(0.0f);
 	model->transform_.scale = glm::vec3(0.5f);
 	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/suzanne.obj");
-	model->mesh_->m_material = engine_->Resources()->Get<Material>("material");
+	model->mesh_->material_ = engine_->Resources()->Get<Material>("material");
 	model->shader_ = engine_->Resources()->Get<Program>("phong_shader");
 	Add(std::move(model));
 
@@ -63,7 +72,7 @@ bool GameScene::Create(const Name& name) {
 	model->transform_.translation = glm::vec3(0, -1, 0);
 	model->transform_.scale = glm::vec3(10);
 	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/plane.obj");
-	model->mesh_->m_material = engine_->Resources()->Get<Material>("material");
+	model->mesh_->material_ = engine_->Resources()->Get<Material>("material");
 	model->shader_ = engine_->Resources()->Get<Program>("phong_shader");
 	Add(std::move(model));
 
@@ -72,9 +81,10 @@ bool GameScene::Create(const Name& name) {
 	light->name_ = "light";
 	light->engine_ = engine_;
 	light->scene_ = this;
-	light->transform_.translation = glm::vec3(10.0f);
+	light->Create("light");
+	light->transform_.translation = glm::vec3(1, 0, 1);
 	light->ambient = glm::vec3(0.1f);
-	light->diffuse = glm::vec3(1.0f);
+	light->diffuse = glm::vec3(1, 1, 1);
 	light->specular = glm::vec3(1.0f);
 	Add(std::move(light));
 
