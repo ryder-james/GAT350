@@ -10,7 +10,7 @@ public:
 
 	virtual bool Create(const Name& name) { name_ = name; return true; }
 
-	void SetShader(class Program* program, const glm::mat4& view);
+	void SetShader(class Program* shader);
 	void Edit();
 
 public:

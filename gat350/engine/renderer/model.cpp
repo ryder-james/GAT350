@@ -11,7 +11,7 @@ void Model::Draw(GLenum primitiveType) {
 	glm::mat4 mvp_matrix = cameras[0]->projection_matrix_ * model_view_matrix;
 
 	shader_->Use();
-	shader_->SetUniform("model_view_matrix", model_view_matrix);
+	shader_->SetUniform("mv_matrix", model_view_matrix);
 	shader_->SetUniform("mvp_matrix", mvp_matrix);
 
 	mesh_->SetShader(shader_.get());

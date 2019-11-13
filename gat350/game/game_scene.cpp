@@ -82,7 +82,7 @@ void GameScene::Update() {
 
 	// set shader uniforms
 	Light* light = Get<Light>("light");
-	//light->SetShader(engine_->Resources()->Get<Program>("phong_shader").get());
+	light->SetShader(engine_->Resources()->Get<Program>("phong_shader").get());
 
 	// gui
 	GUI::Update(engine_->GetEvent());
