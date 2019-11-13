@@ -213,6 +213,8 @@
     <ClInclude Include="game\game_scene.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="builds\assets\shaders\basic.frag" />
+    <None Include="builds\assets\shaders\basic_color.vert" />
     <None Include="builds\assets\shaders\gouraud.frag" />
     <None Include="builds\assets\shaders\gouraud.vert" />
     <None Include="builds\assets\shaders\texture_phong.frag" />

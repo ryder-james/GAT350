@@ -20,6 +20,14 @@ bool GameScene::Create(const Name& name) {
 	shader->Link();
 	engine_->Resources()->Add("phong_shader", std::move(shader));
 
+	shader = engine_->Factory()->Create<Program>(Program::GetClassName());
+	shader->name_ = "shader";
+	shader->engine_ = engine_;
+	shader->CreateShaderFromFile("shaders/basic_color.vert", GL_VERTEX_SHADER);
+	shader->CreateShaderFromFile("shaders/basic.frag", GL_FRAGMENT_SHADER);
+	shader->Link();
+	engine_->Resources()->Add("debug_shader", std::move(shader));
+
 	// material
 	auto material = engine_->Factory()->Create<Material>(Material::GetClassName());
 	material->name_ = "material";
@@ -30,7 +38,7 @@ bool GameScene::Create(const Name& name) {
 	material->shininess = 128.0f;
 
 	// texture
-	auto texture = engine_->Resources()->Get<Texture>("textures/uvgrid.jpg");
+	auto texture = engine_->Resources()->Get<Texture>("textures/grid.png");
 	material->textures.push_back(texture);
 	engine_->Resources()->Add("material", std::move(material));
 
@@ -38,12 +46,23 @@ bool GameScene::Create(const Name& name) {
 
 	// model
 	auto model = engine_->Factory()->Create<Model>(Model::GetClassName());
-	model->name_ = "model";
+	model->name_ = "model1";
 	model->engine_ = engine_;
 	model->scene_ = this;
 	model->transform_.translation = glm::vec3(0.0f);
 	model->transform_.scale = glm::vec3(0.5f);
-	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/sphere.obj");
+	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/suzanne.obj");
+	model->mesh_->m_material = engine_->Resources()->Get<Material>("material");
+	model->shader_ = engine_->Resources()->Get<Program>("phong_shader");
+	Add(std::move(model));
+
+	model = engine_->Factory()->Create<Model>(Model::GetClassName());
+	model->name_ = "model2";
+	model->engine_ = engine_;
+	model->scene_ = this;
+	model->transform_.translation = glm::vec3(0, -1, 0);
+	model->transform_.scale = glm::vec3(10);
+	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/plane.obj");
 	model->mesh_->m_material = engine_->Resources()->Get<Material>("material");
 	model->shader_ = engine_->Resources()->Get<Program>("phong_shader");
 	Add(std::move(model));
@@ -76,12 +95,13 @@ bool GameScene::Create(const Name& name) {
 void GameScene::Update() {
 	Scene::Update();
 
-	Model* model = Get<Model>("model");
-	glm::quat r = glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
-	model->transform_.rotation = model->transform_.rotation * r;
+	//Model* model = Get<Model>("model2");
+	//glm::quat r = glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
+	//model->transform_.rotation = model->transform_.rotation * r;
 
 	// set shader uniforms
 	Light* light = Get<Light>("light");
+	light->transform_.translation = light->transform_.translation * glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
 	light->SetShader(engine_->Resources()->Get<Program>("phong_shader").get());
 
 	// gui
