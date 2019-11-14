@@ -8,17 +8,24 @@ bool Camera::Create(const Name& name) {
 
 	engine_->Get<Input>()->AddAction("rotate_camera_x", Input::X, Input::MOUSE);
 	engine_->Get<Input>()->AddAction("rotate_camera_y", Input::Y, Input::MOUSE);
+	engine_->Get<Input>()->AddAction("camera_orbit", SDL_BUTTON_RIGHT, Input::MOUSE);
 
-	engine_->Get<Input>()->AddAction("camera_forward", SDL_SCANCODE_W);
-	engine_->Get<Input>()->AddAction("camera_backward", SDL_SCANCODE_S);
+	engine_->Get<Input>()->AddAction("camera_forward", SDL_SCANCODE_W, Input::KEYBOARD);
+	engine_->Get<Input>()->AddAction("camera_backward", SDL_SCANCODE_S, Input::KEYBOARD);
+	engine_->Get<Input>()->AddAction("camera_left", SDL_SCANCODE_A, Input::KEYBOARD);
+	engine_->Get<Input>()->AddAction("camera_right", SDL_SCANCODE_D, Input::KEYBOARD);
+	engine_->Get<Input>()->AddAction("camera_up", SDL_SCANCODE_E, Input::KEYBOARD);
+	engine_->Get<Input>()->AddAction("camera_down", SDL_SCANCODE_Q, Input::KEYBOARD);
 
 	return true;
 }
 
 void Camera::Update() {
 	glm::vec3 rotation(0);
-	rotation.x = engine_->Get<Input>()->GetAxisRelative("rotate_camera_x") * 0.01f;
-	rotation.y = engine_->Get<Input>()->GetAxisRelative("rotate_camera_y") * 0.01f;
+	if (engine_->Get <Input>()->GetButton("camera_orbit", Input::HELD)) {
+		rotation.x = engine_->Get<Input>()->GetAxisRelative("rotate_camera_x") * 0.01f;
+		rotation.y = engine_->Get<Input>()->GetAxisRelative("rotate_camera_y") * 0.01f;
+	}
 
 	glm::quat pitch = glm::angleAxis(rotation.y, glm::vec3(1, 0, 0));
 	glm::quat yaw = glm::angleAxis(rotation.x, glm::vec3(0, 1, 0));
