@@ -17,4 +17,7 @@ public:
 	float rate_ = 1.0f;
 	float amplitude_ = 0.0f;
 	float frequency_ = 0.0f;
+
+	glm::vec2 uv_scale_ = glm::vec2(1);
+	glm::vec2 uv_offset_ = glm::vec2(0);
 };

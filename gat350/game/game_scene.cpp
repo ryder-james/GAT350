@@ -67,8 +67,8 @@ bool GameScene::Create(const Name& name) {
 	model->engine_ = engine_;
 	model->scene_ = this;
 	model->transform_.translation = glm::vec3(0.0f);
-	model->transform_.scale = glm::vec3(0.5f);
-	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/suzanne.obj");
+	model->transform_.scale = glm::vec3(0.2f);
+	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/dragon.obj");
 	model->mesh_->material_ = engine_->Resources()->Get<Material>("material");
 	model->shader_ = engine_->Resources()->Get<Program>("phong_shader_fx");
 	Add(std::move(model));
@@ -77,7 +77,7 @@ bool GameScene::Create(const Name& name) {
 	model->name_ = "model2";
 	model->engine_ = engine_;
 	model->scene_ = this;
-	model->transform_.translation = glm::vec3(0, -1, 0);
+	model->transform_.translation = glm::vec3(0, -2, 0);
 	model->transform_.scale = glm::vec3(10);
 	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/plane.obj");
 	model->mesh_->material_ = engine_->Resources()->Get<Material>("material");
@@ -91,9 +91,9 @@ bool GameScene::Create(const Name& name) {
 	light->scene_ = this;
 	light->Create("light");
 	light->transform_.translation = glm::vec3(1, 0, 1);
-	light->ambient = glm::vec3(0.1f);
-	light->diffuse = glm::vec3(1, 1, 1);
-	light->specular = glm::vec3(1.0f);
+	light->ambient = glm::vec3(0.6, 0.2f, 0.2f);
+	light->diffuse = glm::vec3(0.6, 0.2f, 0.2f);
+	light->specular = glm::vec3(1, 0.2f, 0.2f);
 	Add(std::move(light));
 
 	// camera
@@ -137,6 +137,10 @@ void GameScene::Update() {
 	shader->SetUniform("amplitude", amplitude_);
 	shader->SetUniform("frequency", frequency_);
 
+	shader->SetUniform("uv_scale", uv_scale_);
+	uv_offset_.y += g_timer.dt;
+	shader->SetUniform("uv_offset", uv_offset_);
+
 	// gui
 	GUI::Update(engine_->GetEvent());
 	GUI::Begin(engine_->Get<Renderer>());
@@ -145,6 +149,8 @@ void GameScene::Update() {
 	ImGui::SliderFloat("rate", &rate_, 0, 10);
 	ImGui::SliderFloat("amplitude", &amplitude_, 0, 10);
 	ImGui::SliderFloat("frequency", &frequency_, 0, 10);
+	ImGui::SliderFloat2("uv scale", glm::value_ptr(uv_scale_), -5, 5);
+	ImGui::SliderFloat2("uv offset", glm::value_ptr(uv_offset_), -5, 5);
 	GUI::End();
 }
 
