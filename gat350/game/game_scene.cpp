@@ -93,6 +93,7 @@ bool GameScene::Create(const Name& name) {
 	camera->name_ = "camera";
 	camera->engine_ = engine_;
 	camera->scene_ = this;
+	camera->Create("camera");
 	camera->transform_.translation = glm::vec3(0.0f, 0.0f, 5.0f);
 	camera->transform_.rotation = glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	camera->SetProjection(45.0f, 1280.0f / 720.0f, 0.01f, 100.0f);

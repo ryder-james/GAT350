@@ -23,9 +23,9 @@ bool Engine::Initialize() {
 	}
 
 	// systems
-	//std::unique_ptr<Input> input = std::make_unique<Input>(Input::GetClassName(), this);
-	//input->Initialize();
-	//systems_.push_back(std::move(input));
+	std::unique_ptr<Input> input = std::make_unique<Input>(Input::GetClassName(), this);
+	input->Initialize();
+	systems_.push_back(std::move(input));
 
 	std::unique_ptr<Renderer> renderer = std::make_unique<Renderer>(Renderer::GetClassName(), this);
 	renderer->Initialize(1280, 720);
