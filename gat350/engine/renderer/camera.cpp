@@ -17,8 +17,11 @@ bool Camera::Create(const Name& name) {
 
 void Camera::Update() {
 	glm::vec3 rotation(0);
-	rotation.x = engine_->Get<Input>()->GetAxisRelative("rotate_camera_x") * 0.01f;
-	rotation.y = engine_->Get<Input>()->GetAxisRelative("rotate_camera_y") * 0.01f;
+	if (engine_->Get<Input>()->GetButton("camera_orbit", Input::HELD))
+	{
+		rotation.x = engine_->Get<Input>()->GetAxisRelative("rotate_camera_x") * 0.01f;
+		rotation.y = engine_->Get<Input>()->GetAxisRelative("rotate_camera_y") * 0.01f;
+	}
 
 	glm::quat pitch = glm::angleAxis(rotation.y, glm::vec3(1, 0, 0));
 	glm::quat yaw = glm::angleAxis(rotation.x, glm::vec3(0, 1, 0));
