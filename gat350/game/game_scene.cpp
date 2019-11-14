@@ -23,6 +23,14 @@ bool GameScene::Create(const Name& name) {
 	shader = engine_->Factory()->Create<Program>(Program::GetClassName());
 	shader->name_ = "shader";
 	shader->engine_ = engine_;
+	shader->CreateShaderFromFile("shaders/texture_phong_fx.vert", GL_VERTEX_SHADER);
+	shader->CreateShaderFromFile("shaders/texture_phong_fx.frag", GL_FRAGMENT_SHADER);
+	shader->Link();
+	engine_->Resources()->Add("phong_shader_fx", std::move(shader));
+
+	shader = engine_->Factory()->Create<Program>(Program::GetClassName());
+	shader->name_ = "shader";
+	shader->engine_ = engine_;
 	shader->CreateShaderFromFile("shaders/basic_color.vert", GL_VERTEX_SHADER);
 	shader->CreateShaderFromFile("shaders/basic.frag", GL_FRAGMENT_SHADER);
 	shader->Link();
@@ -38,7 +46,7 @@ bool GameScene::Create(const Name& name) {
 	material->shininess = 128.0f;
 
 	// texture
-	auto texture = engine_->Resources()->Get<Texture>("textures/grid.png");
+	auto texture = engine_->Resources()->Get<Texture>("textures/lava.png");
 	material->textures.push_back(texture);
 	engine_->Resources()->Add("material", std::move(material));
 
@@ -62,7 +70,7 @@ bool GameScene::Create(const Name& name) {
 	model->transform_.scale = glm::vec3(0.5f);
 	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/suzanne.obj");
 	model->mesh_->material_ = engine_->Resources()->Get<Material>("material");
-	model->shader_ = engine_->Resources()->Get<Program>("phong_shader");
+	model->shader_ = engine_->Resources()->Get<Program>("phong_shader_fx");
 	Add(std::move(model));
 
 	model = engine_->Factory()->Create<Model>(Model::GetClassName());
@@ -110,14 +118,33 @@ void GameScene::Update() {
 	//glm::quat r = glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
 	//model->transform_.rotation = model->transform_.rotation * r;
 
+	auto shader = engine_->Resources()->Get<Program>("phong_shader_fx").get();
+
 	// set shader uniforms
 	Light* light = Get<Light>("light");
-	light->transform_.translation = light->transform_.translation * glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
+	//light->transform_.translation = light->transform_.translation * glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
 	light->SetShader(engine_->Resources()->Get<Program>("phong_shader").get());
+	light->SetShader(shader);
+
+	time_ += g_timer.dt;
+	if (time_ > 10) {
+		time_ = 0;
+	}
+
+	shader->SetUniform("scale", scale_);
+	shader->SetUniform("time", time_);
+	shader->SetUniform("rate", rate_);
+	shader->SetUniform("amplitude", amplitude_);
+	shader->SetUniform("frequency", frequency_);
 
 	// gui
 	GUI::Update(engine_->GetEvent());
 	GUI::Begin(engine_->Get<Renderer>());
+	ImGui::SliderFloat3("scale", glm::value_ptr(scale_), -10, 10);
+	ImGui::SliderFloat("time", &time_, 0, 10);
+	ImGui::SliderFloat("rate", &rate_, 0, 10);
+	ImGui::SliderFloat("amplitude", &amplitude_, 0, 10);
+	ImGui::SliderFloat("frequency", &frequency_, 0, 10);
 	GUI::End();
 }
 

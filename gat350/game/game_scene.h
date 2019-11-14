@@ -9,4 +9,12 @@ public:
 	bool Create(const Name& name) override;
 	void Update() override;
 	void Draw() override;
+
+public:
+	glm::vec3 scale_ = glm::vec3(1);
+
+	float time_ = 0.0f;
+	float rate_ = 1.0f;
+	float amplitude_ = 0.0f;
+	float frequency_ = 0.0f;
 };
