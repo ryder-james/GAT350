@@ -43,7 +43,7 @@ void Light::SetShader(class Program* shader)
 	shader->SetUniform("light.diffuse", diffuse);
 	shader->SetUniform("light.specular", specular);
 	shader->SetUniform("light.type", type);
-	shader->SetUniform("light.cutoff", cutoff);
+	shader->SetUniform("light.cutoff", glm::radians(cutoff));
 	shader->SetUniform("light.exponent", exponent);
 
 	std::vector<Camera*> cameras = scene_->Get<Camera>();
@@ -56,9 +56,11 @@ void Light::SetShader(class Program* shader)
 
 void Light::Edit()
 {
-	ImGui::Begin("Light");
-	ImGui::ColorEdit3("Ambient", (float*)&ambient);
-	ImGui::ColorEdit3("Diffuse", (float*)&diffuse);
-	ImGui::ColorEdit3("Specular", (float*)&specular);
-	ImGui::End();
+	ImGui::Text("Light");
+	ImGui::ColorEdit3("Ambient", glm::value_ptr(ambient));
+	ImGui::ColorEdit3("Diffuse", glm::value_ptr(diffuse));
+	ImGui::ColorEdit3("Specular", glm::value_ptr(specular));
+	ImGui::SliderFloat("Cutoff", &cutoff, 0, 90);
+	ImGui::SliderFloat("Exponent", &exponent, 0, 128);
+	ImGui::SliderInt("Type", (int*)&type, (int)eType::POINT, (int)eType::SPOT);
 }

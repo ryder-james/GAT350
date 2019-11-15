@@ -324,5 +324,8 @@
     <None Include="builds\assets\shaders\texture_phong_fx.frag">
       <Filter>shaders</Filter>
     </None>
+    <None Include="builds\assets\shaders\texture_phong_light.frag">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

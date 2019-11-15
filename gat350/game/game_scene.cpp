@@ -16,7 +16,7 @@ bool GameScene::Create(const Name& name) {
 	shader->name_ = "shader";
 	shader->engine_ = engine_;
 	shader->CreateShaderFromFile("shaders/texture_phong.vert", GL_VERTEX_SHADER);
-	shader->CreateShaderFromFile("shaders/texture_phong.frag", GL_FRAGMENT_SHADER);
+	shader->CreateShaderFromFile("shaders/texture_phong_light.frag", GL_FRAGMENT_SHADER);
 	shader->Link();
 	engine_->Resources()->Add("phong_shader", std::move(shader));
 
@@ -46,7 +46,7 @@ bool GameScene::Create(const Name& name) {
 	material->shininess = 128.0f;
 
 	// texture
-	auto texture = engine_->Resources()->Get<Texture>("textures/lava.png");
+	auto texture = engine_->Resources()->Get<Texture>("textures/uvgrid.jpg");
 	material->textures.push_back(texture);
 	engine_->Resources()->Add("material", std::move(material));
 
@@ -67,10 +67,10 @@ bool GameScene::Create(const Name& name) {
 	model->engine_ = engine_;
 	model->scene_ = this;
 	model->transform_.translation = glm::vec3(0.0f);
-	model->transform_.scale = glm::vec3(0.2f);
-	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/dragon.obj");
+	model->transform_.scale = glm::vec3(1);
+	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/suzanne.obj");
 	model->mesh_->material_ = engine_->Resources()->Get<Material>("material");
-	model->shader_ = engine_->Resources()->Get<Program>("phong_shader_fx");
+	model->shader_ = engine_->Resources()->Get<Program>("phong_shader");
 	Add(std::move(model));
 
 	model = engine_->Factory()->Create<Model>(Model::GetClassName());
@@ -90,10 +90,12 @@ bool GameScene::Create(const Name& name) {
 	light->engine_ = engine_;
 	light->scene_ = this;
 	light->Create("light");
-	light->transform_.translation = glm::vec3(1, 0, 1);
-	light->ambient = glm::vec3(0.6, 0.2f, 0.2f);
-	light->diffuse = glm::vec3(0.6, 0.2f, 0.2f);
-	light->specular = glm::vec3(1, 0.2f, 0.2f);
+	light->transform_.translation = glm::vec3(0.2f, 2, 0.2f);
+	light->transform_.rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0));
+	light->ambient = glm::vec3(0.3f);
+	light->diffuse = glm::vec3(1);
+	light->specular = glm::vec3(0);
+	light->cutoff = 30.0f;
 	Add(std::move(light));
 
 	// camera
@@ -118,47 +120,48 @@ void GameScene::Update() {
 	//glm::quat r = glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
 	//model->transform_.rotation = model->transform_.rotation * r;
 
-	auto shader = engine_->Resources()->Get<Program>("phong_shader_fx").get();
+	//auto shader = engine_->Resources()->Get<Program>("phong_shader_fx").get();
 
 	// set shader uniforms
 	Light* light = Get<Light>("light");
-	//light->transform_.translation = light->transform_.translation * glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
+	light->transform_.translation = light->transform_.translation * glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
 	light->SetShader(engine_->Resources()->Get<Program>("phong_shader").get());
-	light->SetShader(shader);
+	//light->SetShader(shader);
 
-	time_ += g_timer.dt;
-	if (time_ > 10) {
-		time_ = 0;
-	}
+	//time_ += g_timer.dt;
+	//if (time_ > 10) {
+	//	time_ = 0;
+	//}
 
-	shader->SetUniform("scale", scale_);
-	shader->SetUniform("time", time_);
-	shader->SetUniform("rate", rate_);
-	shader->SetUniform("amplitude", amplitude_);
-	shader->SetUniform("frequency", frequency_);
+	//shader->SetUniform("scale", scale_);
+	//shader->SetUniform("time", time_);
+	//shader->SetUniform("rate", rate_);
+	//shader->SetUniform("amplitude", amplitude_);
+	//shader->SetUniform("frequency", frequency_);
 
-	shader->SetUniform("uv_scale", uv_scale_);
-	uv_offset_.y += g_timer.dt;
-	shader->SetUniform("uv_offset", uv_offset_);
+	//shader->SetUniform("uv_scale", uv_scale_);
+	//uv_offset_.y += g_timer.dt;
+	//shader->SetUniform("uv_offset", uv_offset_);
 
 	// gui
 	GUI::Update(engine_->GetEvent());
 	GUI::Begin(engine_->Get<Renderer>());
-	ImGui::SliderFloat3("scale", glm::value_ptr(scale_), -10, 10);
-	ImGui::SliderFloat("time", &time_, 0, 10);
-	ImGui::SliderFloat("rate", &rate_, 0, 10);
-	ImGui::SliderFloat("amplitude", &amplitude_, 0, 10);
-	ImGui::SliderFloat("frequency", &frequency_, 0, 10);
-	ImGui::SliderFloat2("uv scale", glm::value_ptr(uv_scale_), -5, 5);
-	ImGui::SliderFloat2("uv offset", glm::value_ptr(uv_offset_), -5, 5);
+	light->Edit();
+	//ImGui::SliderFloat3("scale", glm::value_ptr(scale_), -10, 10);
+	//ImGui::SliderFloat("time", &time_, 0, 10);
+	//ImGui::SliderFloat("rate", &rate_, 0, 10);
+	//ImGui::SliderFloat("amplitude", &amplitude_, 0, 10);
+	//ImGui::SliderFloat("frequency", &frequency_, 0, 10);
+	//ImGui::SliderFloat2("uv scale", glm::value_ptr(uv_scale_), -5, 5);
+	//ImGui::SliderFloat2("uv offset", glm::value_ptr(uv_offset_), -5, 5);
 	GUI::End();
 }
 
 void GameScene::Draw() {
 	engine_->Get<Renderer>()->ClearBuffer();
 
-	GUI::Draw();
 	Scene::Draw();
+	GUI::Draw();
 
 	engine_->Get<Renderer>()->SwapBuffer();
 }

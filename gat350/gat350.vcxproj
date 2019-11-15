@@ -222,6 +222,7 @@
     <None Include="builds\assets\shaders\texture_phong_fog.frag" />
     <None Include="builds\assets\shaders\texture_phong_fx.frag" />
     <None Include="builds\assets\shaders\texture_phong_fx.vert" />
+    <None Include="builds\assets\shaders\texture_phong_light.frag" />
     <None Include="builds\assets\shaders\texture_phong_specular.frag" />
     <None Include="builds\assets\shaders\toon.frag" />
   </ItemGroup>
