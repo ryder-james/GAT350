@@ -36,22 +36,26 @@ void Light::Draw(GLenum primitiveType)
 
 void Light::SetShader(class Program* shader)
 {
+	SetShader("light", shader);
+}
+
+void Light::SetShader(const std::string& lightname, Program* shader) {
 	ASSERT(shader);
 
 	shader->Use();
-	shader->SetUniform("light.ambient", ambient);
-	shader->SetUniform("light.diffuse", diffuse);
-	shader->SetUniform("light.specular", specular);
-	shader->SetUniform("light.type", type);
-	shader->SetUniform("light.cutoff", glm::radians(cutoff));
-	shader->SetUniform("light.exponent", exponent);
+	shader->SetUniform(lightname + ".ambient", ambient);
+	shader->SetUniform(lightname + ".diffuse", diffuse);
+	shader->SetUniform(lightname + ".specular", specular);
+	shader->SetUniform(lightname + ".type", type);
+	shader->SetUniform(lightname + ".cutoff", glm::radians(cutoff));
+	shader->SetUniform(lightname + ".exponent", exponent);
 
 	std::vector<Camera*> cameras = scene_->Get<Camera>();
 	ASSERT(!cameras.empty());
 
 	glm::mat4 light_view_matrix = cameras[0]->view_matrix_ * transform_.GetMatrix();
-	shader->SetUniform("light.position", light_view_matrix[3]);
-	shader->SetUniform("light.direction", glm::mat3(light_view_matrix) * glm::vec3(0.0f, 0.0f, 1.0f));
+	shader->SetUniform(lightname + ".position", light_view_matrix[3]);
+	shader->SetUniform(lightname + ".direction", glm::mat3(light_view_matrix) * glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
 void Light::Edit()
