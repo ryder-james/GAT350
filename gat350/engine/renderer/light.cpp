@@ -56,11 +56,17 @@ void Light::SetShader(class Program* shader)
 
 void Light::Edit()
 {
-	ImGui::Text("Light");
+	Actor::Edit();
+
+	ImGui::Separator();
+
+	ImGui::Text("Type: %s", Light::GetClassName());
 	ImGui::ColorEdit3("Ambient", glm::value_ptr(ambient));
 	ImGui::ColorEdit3("Diffuse", glm::value_ptr(diffuse));
 	ImGui::ColorEdit3("Specular", glm::value_ptr(specular));
 	ImGui::SliderFloat("Cutoff", &cutoff, 0, 90);
 	ImGui::SliderFloat("Exponent", &exponent, 0, 128);
-	ImGui::SliderInt("Type", (int*)&type, (int)eType::POINT, (int)eType::SPOT);
+
+	const char* types[] = { "Point", "Direction", "Spot" };
+	ImGui::Combo("Type", (int*)&type, types, IM_ARRAYSIZE(types));
 }

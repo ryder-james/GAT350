@@ -1,5 +1,9 @@
-#include "game_scene.h"
+#include "light_scene.h"
+
 #include "../engine/engine.h"
+
+#include "../engine/editor/editor.h"
+
 #include "../engine/renderer/renderer.h"
 #include "../engine/renderer/program.h"
 #include "../engine/renderer/texture.h"
@@ -10,7 +14,7 @@
 #include "../engine/renderer/camera.h"
 #include "../engine/renderer/gui.h"
 
-bool GameScene::Create(const Name& name) {
+bool LightScene::Create(const Name& name) {
 	// shader
 	auto shader = engine_->Factory()->Create<Program>(Program::GetClassName());
 	shader->name_ = "shader";
@@ -113,51 +117,22 @@ bool GameScene::Create(const Name& name) {
 	return true;
 }
 
-void GameScene::Update() {
+void LightScene::Update() {
 	Scene::Update();
 
-	//Model* model = Get<Model>("model2");
-	//glm::quat r = glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
-	//model->transform_.rotation = model->transform_.rotation * r;
-
-	//auto shader = engine_->Resources()->Get<Program>("phong_shader_fx").get();
-
-	// set shader uniforms
 	Light* light = Get<Light>("light");
 	light->transform_.translation = light->transform_.translation * glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
 	light->SetShader(engine_->Resources()->Get<Program>("phong_shader").get());
-	//light->SetShader(shader);
 
-	//time_ += g_timer.dt;
-	//if (time_ > 10) {
-	//	time_ = 0;
-	//}
-
-	//shader->SetUniform("scale", scale_);
-	//shader->SetUniform("time", time_);
-	//shader->SetUniform("rate", rate_);
-	//shader->SetUniform("amplitude", amplitude_);
-	//shader->SetUniform("frequency", frequency_);
-
-	//shader->SetUniform("uv_scale", uv_scale_);
-	//uv_offset_.y += g_timer.dt;
-	//shader->SetUniform("uv_offset", uv_offset_);
-
-	// gui
 	GUI::Update(engine_->GetEvent());
 	GUI::Begin(engine_->Get<Renderer>());
-	light->Edit();
-	//ImGui::SliderFloat3("scale", glm::value_ptr(scale_), -10, 10);
-	//ImGui::SliderFloat("time", &time_, 0, 10);
-	//ImGui::SliderFloat("rate", &rate_, 0, 10);
-	//ImGui::SliderFloat("amplitude", &amplitude_, 0, 10);
-	//ImGui::SliderFloat("frequency", &frequency_, 0, 10);
-	//ImGui::SliderFloat2("uv scale", glm::value_ptr(uv_scale_), -5, 5);
-	//ImGui::SliderFloat2("uv offset", glm::value_ptr(uv_offset_), -5, 5);
+
+	engine_->Get<Editor>()->UpdateGUI();
+
 	GUI::End();
 }
 
-void GameScene::Draw() {
+void LightScene::Draw() {
 	engine_->Get<Renderer>()->ClearBuffer();
 
 	Scene::Draw();

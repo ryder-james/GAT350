@@ -1,5 +1,8 @@
 #include "engine.h"
+
 #include "input/input.h"
+#include "editor/editor.h"
+
 #include "renderer/renderer.h"
 #include "renderer/program.h"
 #include "renderer/vertex_index_array.h"
@@ -30,6 +33,10 @@ bool Engine::Initialize() {
 	std::unique_ptr<Renderer> renderer = std::make_unique<Renderer>(Renderer::GetClassName(), this);
 	renderer->Initialize(1280, 720);
 	systems_.push_back(std::move(renderer));
+
+	std::unique_ptr<Editor> editor = std::make_unique<Editor>(Editor::GetClassName(), this);
+	editor->Initialize();
+	systems_.push_back(std::move(editor));
 
 	GUI::Initialize(Get<Renderer>());
 
