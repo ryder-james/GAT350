@@ -12,10 +12,12 @@ public:
 
 	virtual void Edit() {
 		Object::Edit();
+		ImGui::Checkbox("Active", &active_);
 		transform_.Edit();
 	}
 
 public:
+	bool active_ = true;
 	Transform transform_;
 	class Scene* scene_ = nullptr;
 };
