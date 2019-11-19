@@ -176,6 +176,9 @@
     <ClCompile Include="..\external\imgui\imGuIZMO.quat\imGuIZMOquat.cpp">
       <Filter>external</Filter>
     </ClCompile>
+    <ClCompile Include="game\multi_light_scene.cpp">
+      <Filter>source\game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\assert.h">
@@ -303,6 +306,9 @@
     </ClInclude>
     <ClInclude Include="engine\editor\editor.h">
       <Filter>headers\engine\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="game\multi_light_scene.h">
+      <Filter>headers\game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
