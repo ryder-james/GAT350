@@ -1,5 +1,9 @@
-#include "game_scene.h"
+#include "light_scene.h"
+
 #include "../engine/engine.h"
+
+#include "../engine/editor/editor.h"
+
 #include "../engine/renderer/renderer.h"
 #include "../engine/renderer/program.h"
 #include "../engine/renderer/texture.h"
@@ -10,15 +14,23 @@
 #include "../engine/renderer/camera.h"
 #include "../engine/renderer/gui.h"
 
-bool GameScene::Create(const Name& name) {
+bool LightScene::Create(const Name& name) {
 	// shader
 	auto shader = engine_->Factory()->Create<Program>(Program::GetClassName());
 	shader->name_ = "shader";
 	shader->engine_ = engine_;
 	shader->CreateShaderFromFile("shaders/texture_phong.vert", GL_VERTEX_SHADER);
-	shader->CreateShaderFromFile("shaders/texture_phong.frag", GL_FRAGMENT_SHADER);
+	shader->CreateShaderFromFile("shaders/texture_phong_light.frag", GL_FRAGMENT_SHADER);
 	shader->Link();
 	engine_->Resources()->Add("phong_shader", std::move(shader));
+
+	shader = engine_->Factory()->Create<Program>(Program::GetClassName());
+	shader->name_ = "shader";
+	shader->engine_ = engine_;
+	shader->CreateShaderFromFile("shaders/texture_phong_fx.vert", GL_VERTEX_SHADER);
+	shader->CreateShaderFromFile("shaders/texture_phong_fx.frag", GL_FRAGMENT_SHADER);
+	shader->Link();
+	engine_->Resources()->Add("phong_shader_fx", std::move(shader));
 
 	shader = engine_->Factory()->Create<Program>(Program::GetClassName());
 	shader->name_ = "shader";
@@ -38,7 +50,7 @@ bool GameScene::Create(const Name& name) {
 	material->shininess = 128.0f;
 
 	// texture
-	auto texture = engine_->Resources()->Get<Texture>("textures/grid.png");
+	auto texture = engine_->Resources()->Get<Texture>("textures/uvgrid.jpg");
 	material->textures.push_back(texture);
 	engine_->Resources()->Add("material", std::move(material));
 
@@ -59,7 +71,7 @@ bool GameScene::Create(const Name& name) {
 	model->engine_ = engine_;
 	model->scene_ = this;
 	model->transform_.translation = glm::vec3(0.0f);
-	model->transform_.scale = glm::vec3(0.5f);
+	model->transform_.scale = glm::vec3(1);
 	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/suzanne.obj");
 	model->mesh_->material_ = engine_->Resources()->Get<Material>("material");
 	model->shader_ = engine_->Resources()->Get<Program>("phong_shader");
@@ -69,7 +81,7 @@ bool GameScene::Create(const Name& name) {
 	model->name_ = "model2";
 	model->engine_ = engine_;
 	model->scene_ = this;
-	model->transform_.translation = glm::vec3(0, -1, 0);
+	model->transform_.translation = glm::vec3(0, -2, 0);
 	model->transform_.scale = glm::vec3(10);
 	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/plane.obj");
 	model->mesh_->material_ = engine_->Resources()->Get<Material>("material");
@@ -82,10 +94,12 @@ bool GameScene::Create(const Name& name) {
 	light->engine_ = engine_;
 	light->scene_ = this;
 	light->Create("light");
-	light->transform_.translation = glm::vec3(1, 0, 1);
-	light->ambient = glm::vec3(0.1f);
-	light->diffuse = glm::vec3(1, 1, 1);
-	light->specular = glm::vec3(1.0f);
+	light->transform_.translation = glm::vec3(0.2f, 2, 0.2f);
+	light->transform_.rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0));
+	light->ambient = glm::vec3(0.3f);
+	light->diffuse = glm::vec3(1);
+	light->specular = glm::vec3(0);
+	light->cutoff = 30.0f;
 	Add(std::move(light));
 
 	// camera
@@ -103,29 +117,26 @@ bool GameScene::Create(const Name& name) {
 	return true;
 }
 
-void GameScene::Update() {
+void LightScene::Update() {
 	Scene::Update();
 
-	//Model* model = Get<Model>("model2");
-	//glm::quat r = glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
-	//model->transform_.rotation = model->transform_.rotation * r;
-
-	// set shader uniforms
 	Light* light = Get<Light>("light");
 	light->transform_.translation = light->transform_.translation * glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
 	light->SetShader(engine_->Resources()->Get<Program>("phong_shader").get());
 
-	// gui
 	GUI::Update(engine_->GetEvent());
 	GUI::Begin(engine_->Get<Renderer>());
+
+	engine_->Get<Editor>()->UpdateGUI();
+
 	GUI::End();
 }
 
-void GameScene::Draw() {
+void LightScene::Draw() {
 	engine_->Get<Renderer>()->ClearBuffer();
 
-	GUI::Draw();
 	Scene::Draw();
+	GUI::Draw();
 
 	engine_->Get<Renderer>()->SwapBuffer();
 }
