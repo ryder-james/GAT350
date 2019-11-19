@@ -48,10 +48,6 @@ void phong(light_s in_light, vec3 position, vec3 normal, out vec3 ambient, out v
 	{
 		vector_to_light = normalize(-in_light.direction);
 	}
-	else
-	{
-		//vector_to_light = normalize();
-	}
 
 	// ambient
 	ambient = in_light.ambient * material.ambient;
