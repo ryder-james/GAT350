@@ -23,6 +23,7 @@ public:
 
 	void SetShader(class Program* shader);
 	void SetShader(const std::string& lightname, class Program* shader);
+
 	void Edit();
 
 public:

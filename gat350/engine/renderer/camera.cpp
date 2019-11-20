@@ -22,7 +22,9 @@ bool Camera::Create(const Name& name) {
 
 void Camera::Update() {
 	glm::vec3 rotation(0);
+
 	if (engine_->Get <Input>()->GetButton("camera_orbit", Input::HELD)) {
+
 		rotation.x = engine_->Get<Input>()->GetAxisRelative("rotate_camera_x") * 0.01f;
 		rotation.y = engine_->Get<Input>()->GetAxisRelative("rotate_camera_y") * 0.01f;
 	}
