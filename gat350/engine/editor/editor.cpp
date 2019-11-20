@@ -23,11 +23,12 @@ void Editor::UpdateGUI() {
 
 	std::vector<Actor*> actors = scene_->Get<Actor>();
 	for (Actor* actor : actors) {
-	ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-	if(actor == actor_) node_flags |= ImGuiTreeNodeFlags_Selected;
+		ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+		if (actor == actor_) node_flags |= ImGuiTreeNodeFlags_Selected;
 
-	ImColor color = (actor->active_ ? ImColor(1.0f, 1.0f, 1.0f) : ImColor(0.5f, 0.5f, 0.5f));
-	ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)color);
+		ImColor color = (actor->active_ ? ImColor(1.0f, 1.0f, 1.0f) : ImColor(0.5f, 0.5f, 0.5f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(color));
+
 
 		if (ImGui::TreeNodeEx(actor, node_flags, actor->name_.c_str())) {
 			

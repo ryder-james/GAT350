@@ -39,8 +39,8 @@ void Light::SetShader(class Program* shader)
 	SetShader("light", shader);
 }
 
-void Light::SetShader(const std::string& lightname, Program* shader)
-{
+void Light::SetShader(const std::string& lightname, Program* shader) {
+
 	ASSERT(shader);
 
 	shader->Use();
@@ -55,8 +55,8 @@ void Light::SetShader(const std::string& lightname, Program* shader)
 	ASSERT(!cameras.empty());
 
 	glm::mat4 light_view_matrix = cameras[0]->view_matrix_ * transform_.GetMatrix();
-	shader->SetUniform("light.position", light_view_matrix[3]);
-	shader->SetUniform("light.direction", glm::mat3(light_view_matrix) * glm::vec3(0.0f, 0.0f, 1.0f));
+	shader->SetUniform(lightname + ".position", light_view_matrix[3]);
+	shader->SetUniform(lightname + ".direction", glm::mat3(light_view_matrix) * glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
 void Light::Edit()
