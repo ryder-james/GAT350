@@ -18,4 +18,5 @@ public:
 public:
 	Transform transform_;
 	class Scene* scene_ = nullptr;
+	bool active_ = true;
 };
