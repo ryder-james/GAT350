@@ -1,3 +1,4 @@
+#include "bump_scene.h"
 #include "fx_scene.h"
 
 #include "../engine/engine.h"

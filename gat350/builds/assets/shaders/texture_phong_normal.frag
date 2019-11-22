@@ -34,11 +34,8 @@ struct light_s
 
 uniform light_s light;
 
-uniform float dissolve;
-uniform vec3 discard_color;
-
 layout (binding = 0) uniform sampler2D texture_sample;
-layout (binding = 1) uniform sampler2D noise_sample;
+layout (binding = 1) uniform sampler2D normal_sample;
 
 void phong(light_s in_light, vec3 position, vec3 normal, out vec3 ambient, out vec3 diffuse, out vec3 specular)
 {
@@ -92,22 +89,20 @@ void phong(light_s in_light, vec3 position, vec3 normal, out vec3 ambient, out v
 
 void main()
 {
-	//if (mod(gl_FragCoord.y, 4.0) > 2.0) discard;
-
-	vec4 texture_color = texture(texture_sample, ftexcoord);
-	//if (texture_color.rgb == discard_color) discard;
-
-	//if (texture(noise_sample, ftexcoord).r  <= dissolve) discard;
-	texture_color.a *= texture(noise_sample, ftexcoord).r * texture(noise_sample, ftexcoord).a;
+	vec3 normal = texture(normal_sample, ftexcoord).rgb;
+	normal = (normal * 2.0) - 1.0;
 
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
 
-	phong(light, fposition, fnormal, ambient, diffuse, specular);
+	phong(light, fposition, normal, ambient, diffuse, specular);
 
-	vec4 phong_color = vec4(ambient + diffuse, 1.0f) * texture_color + vec4(specular, texture_color.a);
-	
+	color = vec4(ambient + diffuse, 1.0f) * texture(texture_sample, ftexcoord) + vec4(specular, 1.0);
 
-	color = phong_color;
+
+
+	//vec3 texture_color = texture(texture_sample, ftexcoord).rgb;
+	//vec3 normal_color = (fnormal * 0.5) + 0.5;
+	//color = vec4(normal_color, 1.0);
 }

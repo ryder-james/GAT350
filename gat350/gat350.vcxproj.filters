@@ -182,6 +182,9 @@
     <ClCompile Include="game\fx_scene.cpp">
       <Filter>source\game</Filter>
     </ClCompile>
+    <ClCompile Include="game\bump_scene.cpp">
+      <Filter>source\game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\assert.h">
@@ -316,6 +319,9 @@
     <ClInclude Include="game\fx_scene.h">
       <Filter>headers\game</Filter>
     </ClInclude>
+    <ClInclude Include="game\bump_scene.h">
+      <Filter>headers\game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="builds\assets\shaders\texture_phong.frag">
@@ -352,6 +358,9 @@
       <Filter>shaders</Filter>
     </None>
     <None Include="builds\assets\shaders\texture_phong_light.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="builds\assets\shaders\texture_phong_normal.frag">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>
