@@ -40,6 +40,7 @@ void Light::SetShader(class Program* shader)
 }
 
 void Light::SetShader(const std::string& lightname, Program* shader) {
+
 	ASSERT(shader);
 
 	shader->Use();

@@ -29,7 +29,9 @@ void Editor::UpdateGUI() {
 		ImColor color = (actor->active_ ? ImColor(1.0f, 1.0f, 1.0f) : ImColor(0.5f, 0.5f, 0.5f));
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(color));
 
+
 		if (ImGui::TreeNodeEx(actor, node_flags, actor->name_.c_str())) {
+			
 			if (ImGui::IsItemClicked()) actor_ = actor;
 		}
 		ImGui::PopStyleColor();
