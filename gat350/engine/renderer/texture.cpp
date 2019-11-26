@@ -28,10 +28,46 @@ void Texture::CreateTexture(const std::string& filename, GLenum type, GLuint uni
 	GLenum format = (channels == 4) ? GL_RGBA : GL_RGB;
 	glTexImage2D(type, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 
-	glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+#ifdef STB_IMAGE_IMPLEMENTATION
 	stbi_image_free(data);
+#else
+	delete data;
+#endif
+}
+
+void Texture::CreateCubeTexture(const std::vector<std::string>& filenames, GLuint unit) {
+	type_ = GL_TEXTURE_CUBE_MAP;
+	unit_ = unit;
+
+	glGenTextures(1, &texture_);
+	Bind();
+
+	int width, height, channels;
+
+	for (size_t i = 0; i < filenames.size(); i++) {
+		u8* data = LoadImage(filenames[i], width, height, channels);
+		ASSERT(data);
+
+		GLenum format = (channels == 4) ? GL_RGBA : GL_RGB;
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		
+#ifdef STB_IMAGE_IMPLEMENTATION
+		stbi_image_free(data);
+#else
+		delete data;
+#endif
+	}
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
 }
 
 void Texture::Bind() {
@@ -39,9 +75,20 @@ void Texture::Bind() {
 	glBindTexture(type_, texture_);
 }
 
+std::vector<std::string> Texture::GenerateCubeMapNames(const std::string& basename, const std::vector<std::string>& suffixes, const std::string& extension) {
+	std::vector<std::string> names;
+	for (size_t i = 0; i < 6; i++)
+	{
+		std::string name = basename + suffixes[i] + extension;
+		names.push_back(name);
+	}
+
+	return names;
+}
+
 #ifdef STB_IMAGE_IMPLEMENTATION
 u8* Texture::LoadImage(const std::string& filename, int& width, int& height, int& channels) {
-	stbi_set_flip_vertically_on_load(true);
+	stbi_set_flip_vertically_on_load(false);
 	u8* image = stbi_load(filename.c_str(), &width, &height, &channels, 0);
 
 	return image;

@@ -1,4 +1,4 @@
-#include "bump_scene.h"
+#include "cubemap_scene.h"
 
 #include "../engine/engine.h"
 
@@ -14,23 +14,23 @@
 #include "../engine/renderer/camera.h"
 #include "../engine/renderer/gui.h"
 
-bool BumpScene::Create(const Name& name) {
+bool CubemapScene::Create(const Name& name) {
 	// shader
 	auto shader = engine_->Factory()->Create<Program>(Program::GetClassName());
 	shader->name_ = "shader";
 	shader->engine_ = engine_;
-	shader->CreateShaderFromFile("shaders/texture_phong_normal.vert", GL_VERTEX_SHADER);
-	shader->CreateShaderFromFile("shaders/texture_phong_normal.frag", GL_FRAGMENT_SHADER);
+	shader->CreateShaderFromFile("shaders/texture_phong.vert", GL_VERTEX_SHADER);
+	shader->CreateShaderFromFile("shaders/texture_phong_light.frag", GL_FRAGMENT_SHADER);
 	shader->Link();
 	engine_->Resources()->Add("phong_shader", std::move(shader));
 
 	shader = engine_->Factory()->Create<Program>(Program::GetClassName());
 	shader->name_ = "shader";
 	shader->engine_ = engine_;
-	shader->CreateShaderFromFile("shaders/texture_phong_fx.vert", GL_VERTEX_SHADER);
-	shader->CreateShaderFromFile("shaders/texture_phong_fx.frag", GL_FRAGMENT_SHADER);
+	shader->CreateShaderFromFile("shaders/skybox.vert", GL_VERTEX_SHADER);
+	shader->CreateShaderFromFile("shaders/skybox.frag", GL_FRAGMENT_SHADER);
 	shader->Link();
-	engine_->Resources()->Add("phong_shader_fx", std::move(shader));
+	engine_->Resources()->Add("skybox_shader", std::move(shader));
 
 	shader = engine_->Factory()->Create<Program>(Program::GetClassName());
 	shader->name_ = "shader";
@@ -50,25 +50,15 @@ bool BumpScene::Create(const Name& name) {
 	material->shininess = 128.0f;
 
 	// texture
-	{
-		auto texture = engine_->Resources()->Get<Texture>("textures/ogre/diffuse.bmp");
-		material->textures.push_back(texture);
-	}
-	{
-		auto texture = engine_->Resources()->Get<Texture>("textures/ogre/normal.bmp");
-		texture->unit_ = GL_TEXTURE1;
-		material->textures.push_back(texture);
-	}
-	engine_->Resources()->Add("material", std::move(material));
+	auto texture = std::make_unique<Texture>();
+	std::vector<std::string> suffixes = { "_posx", "_negx", "_posy", "_negy", "_posz", "_negz" };
 
-	material = engine_->Factory()->Create<Material>(Material::GetClassName());
-	material->name_ = "material";
-	material->engine_ = engine_;
-	material->ambient = glm::vec3(1.0f);
-	material->diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
-	material->specular = glm::vec3(1.0f);
-	material->shininess = 128.0f;
-	engine_->Resources()->Add("debug_material", std::move(material));
+	std::vector<std::string> names = Texture::GenerateCubeMapNames("textures/lancellotti", suffixes, ".jpg");
+	texture->CreateCubeTexture(names);
+	engine_->Resources()->Add("cube_texture", std::move(texture));
+
+	material->textures.push_back(engine_->Resources()->Get<Texture>("cube_texture"));
+	engine_->Resources()->Add("material", std::move(material));
 
 	// scene actors
 
@@ -79,21 +69,10 @@ bool BumpScene::Create(const Name& name) {
 	model->scene_ = this;
 	model->transform_.translation = glm::vec3(0.0f);
 	model->transform_.scale = glm::vec3(1);
-	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/ogre.obj");
-	model->mesh_->material_ = engine_->Resources()->Get<Material>("material");
-	model->shader_ = engine_->Resources()->Get<Program>("phong_shader");
+	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/cube.obj");
+	model->mesh_->material_ = engine_->Resources()->Get<Material>("cube_material");
+	model->shader_ = engine_->Resources()->Get<Program>("skybox_shader");
 	Add(std::move(model));
-
-	//model = engine_->Factory()->Create<Model>(Model::GetClassName());
-	//model->name_ = "model2";
-	//model->engine_ = engine_;
-	//model->scene_ = this;
-	//model->transform_.translation = glm::vec3(0, -2, 0);
-	//model->transform_.scale = glm::vec3(10);
-	//model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/plane.obj");
-	//model->mesh_->material_ = engine_->Resources()->Get<Material>("material");
-	//model->shader_ = engine_->Resources()->Get<Program>("phong_shader");
-	//Add(std::move(model));
 
 	// light
 	auto light = engine_->Factory()->Create<Light>(Light::GetClassName());
@@ -101,7 +80,7 @@ bool BumpScene::Create(const Name& name) {
 	light->engine_ = engine_;
 	light->scene_ = this;
 	light->Create("light");
-	light->transform_.translation = glm::vec3(0.2f, 1, 0.4f);
+	light->transform_.translation = glm::vec3(0.2f, 2, 0.2f);
 	light->transform_.rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0));
 	light->ambient = glm::vec3(0.3f);
 	light->diffuse = glm::vec3(1);
@@ -124,11 +103,11 @@ bool BumpScene::Create(const Name& name) {
 	return true;
 }
 
-void BumpScene::Update() {
+void CubemapScene::Update() {
 	Scene::Update();
 
 	Light* light = Get<Light>("light");
-	light->transform_.translation = light->transform_.translation * glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 0, 1));
+	light->transform_.translation = light->transform_.translation * glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
 	light->SetShader(engine_->Resources()->Get<Program>("phong_shader").get());
 
 	GUI::Update(engine_->GetEvent());
@@ -139,7 +118,7 @@ void BumpScene::Update() {
 	GUI::End();
 }
 
-void BumpScene::Draw() {
+void CubemapScene::Draw() {
 	engine_->Get<Renderer>()->ClearBuffer();
 
 	Scene::Draw();

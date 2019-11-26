@@ -8,7 +8,8 @@ public:
 		NORMAL,
 		COLOR,
 		TEXCOORD,
-		MULTI
+		MULTI,
+		TANGENT
 	};
 
 	struct VertexBuffer {

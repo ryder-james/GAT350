@@ -14,13 +14,15 @@
 #include "../engine/renderer/camera.h"
 #include "../engine/renderer/gui.h"
 
+#define MAX_LIGHTS 5
+
 bool MultiLightScene::Create(const Name& name) {
 	// shader
 	auto shader = engine_->Factory()->Create<Program>(Program::GetClassName());
 	shader->name_ = "shader";
 	shader->engine_ = engine_;
 	shader->CreateShaderFromFile("shaders/texture_phong.vert", GL_VERTEX_SHADER);
-	shader->CreateShaderFromFile("shaders/texture_phong_light.frag", GL_FRAGMENT_SHADER);
+	shader->CreateShaderFromFile("shaders/texture_phong_lights.frag", GL_FRAGMENT_SHADER);
 	shader->Link();
 	engine_->Resources()->Add("phong_shader", std::move(shader));
 
@@ -89,18 +91,20 @@ bool MultiLightScene::Create(const Name& name) {
 	Add(std::move(model));
 
 	// light
-	auto light = engine_->Factory()->Create<Light>(Light::GetClassName());
-	light->name_ = "light";
-	light->engine_ = engine_;
-	light->scene_ = this;
-	light->Create("light");
-	light->transform_.translation = glm::vec3(0.2f, 2, 0.2f);
-	light->transform_.rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0));
-	light->ambient = glm::vec3(0.3f);
-	light->diffuse = glm::vec3(1);
-	light->specular = glm::vec3(0);
-	light->cutoff = 30.0f;
-	Add(std::move(light));
+	for (size_t i = 0; i < MAX_LIGHTS; i++) {
+		auto light = engine_->Factory()->Create<Light>(Light::GetClassName());
+		light->name_ = "light" + i;
+		light->engine_ = engine_;
+		light->scene_ = this;
+		light->Create("light");
+		light->transform_.translation = glm::sphericalRand(2.0f);
+		light->transform_.rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0));
+		light->ambient = glm::vec3(0.0f);
+		light->diffuse = glm::rgbColor(glm::vec3(g_random(360.0f), 1, 1));
+		light->specular = glm::vec3(0);
+		light->cutoff = 30.0f;
+		Add(std::move(light));
+	}
 
 	// camera
 	auto camera = engine_->Factory()->Create<Camera>(Camera::GetClassName());
@@ -120,9 +124,14 @@ bool MultiLightScene::Create(const Name& name) {
 void MultiLightScene::Update() {
 	Scene::Update();
 
-	Light* light = Get<Light>("light");
-	light->transform_.translation = light->transform_.translation * glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
-	light->SetShader(engine_->Resources()->Get<Program>("phong_shader").get());
+	auto lights = Get<Light>();
+	size_t index = 0;
+	for (Light* light : lights) {
+		light->transform_.translation = light->transform_.translation * glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
+		
+		std::string lightname = "lights[" + std::to_string(index++) + "]";
+		light->SetShader(lightname, engine_->Resources()->Get<Program>("phong_shader").get());
+	}
 
 	GUI::Update(engine_->GetEvent());
 	GUI::Begin(engine_->Get<Renderer>());

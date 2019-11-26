@@ -185,6 +185,9 @@
     <ClCompile Include="game\bump_scene.cpp">
       <Filter>source\game</Filter>
     </ClCompile>
+    <ClCompile Include="game\cubemap_scene.cpp">
+      <Filter>source\game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\assert.h">
@@ -322,6 +325,9 @@
     <ClInclude Include="game\bump_scene.h">
       <Filter>headers\game</Filter>
     </ClInclude>
+    <ClInclude Include="game\cubemap_scene.h">
+      <Filter>headers\game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="builds\assets\shaders\texture_phong.frag">
@@ -361,6 +367,18 @@
       <Filter>shaders</Filter>
     </None>
     <None Include="builds\assets\shaders\texture_phong_normal.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="builds\assets\shaders\texture_phong_normal.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="builds\assets\shaders\skybox.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="builds\assets\shaders\skybox.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="builds\assets\shaders\texture_phong_lights.frag">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>
