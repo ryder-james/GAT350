@@ -381,5 +381,11 @@
     <None Include="builds\assets\shaders\texture_phong_lights.frag">
       <Filter>shaders</Filter>
     </None>
+    <None Include="builds\assets\shaders\reflection.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="builds\assets\shaders\reflection.frag">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

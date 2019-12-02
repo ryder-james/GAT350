@@ -74,7 +74,7 @@ bool MultiLightScene::Create(const Name& name) {
 	model->scene_ = this;
 	model->transform_.translation = glm::vec3(0.0f);
 	model->transform_.scale = glm::vec3(1);
-	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/suzanne.obj");
+	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/ogre.obj");
 	model->mesh_->material_ = engine_->Resources()->Get<Material>("material");
 	model->shader_ = engine_->Resources()->Get<Program>("phong_shader");
 	Add(std::move(model));

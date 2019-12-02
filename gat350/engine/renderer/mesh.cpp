@@ -54,6 +54,10 @@ bool Mesh::Create(const Name& name) {
 }
 
 void Mesh::Draw(GLenum primitiveType) {
+	flags_[ENABLE_DEPTH_TEST] ? glEnable(GL_DEPTH_TEST) : glDisable(GL_DEPTH_TEST);
+	if (flags_[CULL_FRONT]) glCullFace(GL_FRONT);
+	if (flags_[CULL_BACK]) glCullFace(GL_BACK);
+
 	material_->Use();
 	vertex_array_.Draw(primitiveType);
 }
