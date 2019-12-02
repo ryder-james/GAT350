@@ -94,12 +94,13 @@ bool FrameBufferScene::Create(const Name& name) {
 	light->engine_ = engine_;
 	light->scene_ = this;
 	light->Create("light");
-	light->transform_.translation = glm::vec3(0.2f, 2, 0.2f);
+	light->transform_.translation = glm::vec3(0.7f, 2, 0.7f);
 	light->transform_.rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0));
-	light->ambient = glm::vec3(0.3f);
+	light->ambient = glm::vec3(0);
 	light->diffuse = glm::vec3(1);
-	light->specular = glm::vec3(0);
+	light->specular = glm::vec3(1);
 	light->cutoff = 30.0f;
+	light->exponent = 8.0f;
 	Add(std::move(light));
 
 	// camera
