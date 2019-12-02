@@ -188,6 +188,9 @@
     <ClCompile Include="game\cubemap_scene.cpp">
       <Filter>source\game</Filter>
     </ClCompile>
+    <ClCompile Include="game\framebuffer_scene.cpp">
+      <Filter>source\game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\assert.h">
@@ -326,6 +329,9 @@
       <Filter>headers\game</Filter>
     </ClInclude>
     <ClInclude Include="game\cubemap_scene.h">
+      <Filter>headers\game</Filter>
+    </ClInclude>
+    <ClInclude Include="game\framebuffer_scene.h">
       <Filter>headers\game</Filter>
     </ClInclude>
   </ItemGroup>

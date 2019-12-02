@@ -170,6 +170,7 @@
     <ClCompile Include="engine\renderer\vertex_index_array.cpp" />
     <ClCompile Include="game\bump_scene.cpp" />
     <ClCompile Include="game\cubemap_scene.cpp" />
+    <ClCompile Include="game\framebuffer_scene.cpp" />
     <ClCompile Include="game\fx_scene.cpp" />
     <ClCompile Include="game\light_scene.cpp" />
     <ClCompile Include="game\main.cpp" />
@@ -219,6 +220,7 @@
     <ClInclude Include="framework\object_manager.h" />
     <ClInclude Include="game\bump_scene.h" />
     <ClInclude Include="game\cubemap_scene.h" />
+    <ClInclude Include="game\framebuffer_scene.h" />
     <ClInclude Include="game\fx_scene.h" />
     <ClInclude Include="game\light_scene.h" />
     <ClInclude Include="game\multi_light_scene.h" />
