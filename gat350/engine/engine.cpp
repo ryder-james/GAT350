@@ -13,6 +13,7 @@
 #include "renderer/model.h"
 #include "renderer/gui.h"
 #include "renderer/camera.h"
+#include "renderer/framebuffer.h"
 
 bool Engine::Initialize() {
 	// core
@@ -48,6 +49,7 @@ bool Engine::Initialize() {
 	factory_->Register(Material::GetClassName(), new Creator<Material, Object>());
 	factory_->Register(Camera::GetClassName(), new Creator<Camera, Object>());
 	factory_->Register(Light::GetClassName(), new Creator<Light, Object>());
+	factory_->Register(Framebuffer::GetClassName(), new Creator<Framebuffer, Object>());
 
 	// resources
 	resources_ = std::make_unique<resource_manager_t>();

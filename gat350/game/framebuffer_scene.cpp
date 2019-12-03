@@ -13,6 +13,7 @@
 #include "../engine/renderer/model.h"
 #include "../engine/renderer/camera.h"
 #include "../engine/renderer/gui.h"
+#include "../engine/renderer/framebuffer.h"
 
 bool FrameBufferScene::Create(const Name& name) {
 	// shader
@@ -40,6 +41,21 @@ bool FrameBufferScene::Create(const Name& name) {
 	shader->Link();
 	engine_->Resources()->Add("debug_shader", std::move(shader));
 
+	// framebuffer
+	{
+		auto framebuffer = engine_->Factory()->Create<Framebuffer>(Framebuffer::GetClassName());
+		framebuffer->Create("framebuffer");
+		framebuffer->CreateDepthbuffer(512, 512);
+
+		auto texture = engine_->Factory()->Create<Texture>(Texture::GetClassName());
+		texture->CreateTexture(512, 512);
+		engine_->Resources()->Add("render_texture", std::move(texture));
+
+		framebuffer->AttachTexture(engine_->Resources()->Get<Texture>("render_texture"));
+		framebuffer->Unbind();
+		engine_->Resources()->Add("framebuffer", std::move(framebuffer));
+	}
+
 	// material
 	auto material = engine_->Factory()->Create<Material>(Material::GetClassName());
 	material->name_ = "material";
@@ -54,6 +70,17 @@ bool FrameBufferScene::Create(const Name& name) {
 	material->textures.push_back(texture);
 	engine_->Resources()->Add("material", std::move(material));
 
+	// render material
+	material = engine_->Factory()->Create<Material>(Material::GetClassName());
+	material->name_ = "material";
+	material->engine_ = engine_;
+	material->ambient = glm::vec3(1.0f);
+	material->diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
+	material->specular = glm::vec3(1.0f);
+	material->shininess = 128.0f;
+	engine_->Resources()->Add("render_material", std::move(material));
+
+	// debug material
 	material = engine_->Factory()->Create<Material>(Material::GetClassName());
 	material->name_ = "material";
 	material->engine_ = engine_;
@@ -82,8 +109,8 @@ bool FrameBufferScene::Create(const Name& name) {
 	model->engine_ = engine_;
 	model->scene_ = this;
 	model->transform_.translation = glm::vec3(0, -2, 0);
-	model->transform_.scale = glm::vec3(10);
-	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/plane.obj");
+	model->transform_.scale = glm::vec3(1);
+	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/cube.obj");
 	model->mesh_->material_ = engine_->Resources()->Get<Material>("material");
 	model->shader_ = engine_->Resources()->Get<Program>("phong_shader");
 	Add(std::move(model));
@@ -94,7 +121,7 @@ bool FrameBufferScene::Create(const Name& name) {
 	light->engine_ = engine_;
 	light->scene_ = this;
 	light->Create("light");
-	light->transform_.translation = glm::vec3(0.7f, 2, 0.7f);
+	light->transform_.translation = glm::vec3(0.7f, -1, 0.7f);
 	light->transform_.rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0));
 	light->ambient = glm::vec3(0);
 	light->diffuse = glm::vec3(1);

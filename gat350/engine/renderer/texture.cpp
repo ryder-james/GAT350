@@ -23,7 +23,7 @@ void Texture::CreateTexture(const std::string& filename, GLenum type, GLuint uni
 	ASSERT(data);
 
 	glGenTextures(1, &texture_);
-	Bind();
+	glBindTexture(type, texture_);
 
 	GLenum format = (channels == 4) ? GL_RGBA : GL_RGB;
 	glTexImage2D(type, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
@@ -36,6 +36,19 @@ void Texture::CreateTexture(const std::string& filename, GLenum type, GLuint uni
 #else
 	delete data;
 #endif
+}
+
+void Texture::CreateTexture(u32 width, u32 height, GLenum format, GLenum type, GLuint unit) {
+	type_ = type;
+	unit_ = unit;
+
+	glGenTextures(1, &texture_);
+	glBindTexture(type, texture_);
+
+	glTexImage2D(type, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
+
+	glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 void Texture::CreateCubeTexture(const std::vector<std::string>& filenames, GLuint unit) {

@@ -191,6 +191,9 @@
     <ClCompile Include="game\framebuffer_scene.cpp">
       <Filter>source\game</Filter>
     </ClCompile>
+    <ClCompile Include="engine\renderer\framebuffer.cpp">
+      <Filter>source\engine\renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\assert.h">
@@ -333,6 +336,9 @@
     </ClInclude>
     <ClInclude Include="game\framebuffer_scene.h">
       <Filter>headers\game</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\renderer\framebuffer.h">
+      <Filter>headers\engine\renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
