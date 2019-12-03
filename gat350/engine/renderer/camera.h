@@ -18,4 +18,6 @@ public:
 	float aspect_ratio;
 	float near_clip;
 	float far_clip;
+
+	bool user_camera = false;
 };

@@ -26,7 +26,14 @@ void Framebuffer::AttachTexture(const std::shared_ptr<Texture>& texture, GLenum 
 }
 
 void Framebuffer::CreateDepthbuffer(u32 width, u32 height) {
+	glGenRenderbuffers(1, &depthbuffer_);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthbuffer_);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffer_);
+
+	GLenum result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	ASSERT(result == GL_FRAMEBUFFER_COMPLETE);
 }
 
 void Framebuffer::Bind() {
