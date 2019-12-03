@@ -2,6 +2,7 @@
 #define POINT 0
 #define DIRECTION 1
 #define SPOTLIGHT 2
+#define MAX_LIGHTS 5
 
 in vec3 fposition;
 in vec3 fnormal;
@@ -32,13 +33,9 @@ struct light_s
 	vec4 position;
 };
 
-uniform light_s light;
-
-uniform float dissolve;
-uniform vec3 discard_color;
+uniform light_s lights[MAX_LIGHTS];
 
 layout (binding = 0) uniform sampler2D texture_sample;
-layout (binding = 1) uniform sampler2D noise_sample;
 
 void phong(light_s in_light, vec3 position, vec3 normal, out vec3 ambient, out vec3 diffuse, out vec3 specular)
 {
@@ -92,22 +89,19 @@ void phong(light_s in_light, vec3 position, vec3 normal, out vec3 ambient, out v
 
 void main()
 {
-	//if (mod(gl_FragCoord.y, 4.0) > 2.0) discard;
-
-	vec4 texture_color = texture(texture_sample, ftexcoord);
-	//if (texture_color.rgb == discard_color) discard;
-
-	//if (texture(noise_sample, ftexcoord).r  <= dissolve) discard;
-	texture_color.a *= texture(noise_sample, ftexcoord).r * texture(noise_sample, ftexcoord).a;
-
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
 
-	phong(light, fposition, fnormal, ambient, diffuse, specular);
+	for (int i = 0; i < MAX_LIGHTS; i++) {
+		vec3 a, d, s;
 
-	vec4 phong_color = vec4(ambient + diffuse, 1.0f) * texture_color + vec4(specular, texture_color.a);
-	
+		phong(lights[i], fposition, fnormal, a, d, s);
 
-	color = phong_color;
+		ambient = ambient + a;
+		diffuse = diffuse + d;
+		specular = specular + s;
+	}
+
+	color = vec4(ambient + diffuse, 1.0f) * texture(texture_sample, ftexcoord) + vec4(specular, 1.0);
 }

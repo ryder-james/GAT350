@@ -5,8 +5,13 @@
 
 class Mesh : public Resource {
 public:
+	static const u32 ENABLE_DEPTH_TEST = 0;
+	static const u32 CULL_FRONT        = 1;
+	static const u32 CULL_BACK         = 2;
+
+public:
 	OBJECT_DECLARATION(Mesh, Resource)
-		virtual ~Mesh() {}
+	virtual ~Mesh() {}
 
 	bool Create(const Name& name) override;
 	void Draw(GLenum primitiveType = GL_TRIANGLES);
@@ -16,6 +21,7 @@ public:
 
 public:
 	std::shared_ptr<Material> material_;
+	std::bitset<32> flags_ = BIT(ENABLE_DEPTH_TEST) | BIT(CULL_BACK);
 
 protected:
 	VertexArray vertex_array_;

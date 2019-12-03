@@ -1,4 +1,4 @@
-#include "multi_light_scene.h"
+#include "bump_scene.h"
 
 #include "../engine/engine.h"
 
@@ -14,15 +14,13 @@
 #include "../engine/renderer/camera.h"
 #include "../engine/renderer/gui.h"
 
-#define MAX_LIGHTS 5
-
-bool MultiLightScene::Create(const Name& name) {
+bool BumpScene::Create(const Name& name) {
 	// shader
 	auto shader = engine_->Factory()->Create<Program>(Program::GetClassName());
 	shader->name_ = "shader";
 	shader->engine_ = engine_;
-	shader->CreateShaderFromFile("shaders/texture_phong.vert", GL_VERTEX_SHADER);
-	shader->CreateShaderFromFile("shaders/texture_phong_lights.frag", GL_FRAGMENT_SHADER);
+	shader->CreateShaderFromFile("shaders/texture_phong_normal.vert", GL_VERTEX_SHADER);
+	shader->CreateShaderFromFile("shaders/texture_phong_normal.frag", GL_FRAGMENT_SHADER);
 	shader->Link();
 	engine_->Resources()->Add("phong_shader", std::move(shader));
 
@@ -52,8 +50,15 @@ bool MultiLightScene::Create(const Name& name) {
 	material->shininess = 128.0f;
 
 	// texture
-	auto texture = engine_->Resources()->Get<Texture>("textures/uvgrid.jpg");
-	material->textures.push_back(texture);
+	{
+		auto texture = engine_->Resources()->Get<Texture>("textures/ogre/diffuse.bmp");
+		material->textures.push_back(texture);
+	}
+	{
+		auto texture = engine_->Resources()->Get<Texture>("textures/ogre/normal.bmp");
+		texture->unit_ = GL_TEXTURE1;
+		material->textures.push_back(texture);
+	}
 	engine_->Resources()->Add("material", std::move(material));
 
 	material = engine_->Factory()->Create<Material>(Material::GetClassName());
@@ -79,32 +84,30 @@ bool MultiLightScene::Create(const Name& name) {
 	model->shader_ = engine_->Resources()->Get<Program>("phong_shader");
 	Add(std::move(model));
 
-	model = engine_->Factory()->Create<Model>(Model::GetClassName());
-	model->name_ = "model2";
-	model->engine_ = engine_;
-	model->scene_ = this;
-	model->transform_.translation = glm::vec3(0, -2, 0);
-	model->transform_.scale = glm::vec3(10);
-	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/plane.obj");
-	model->mesh_->material_ = engine_->Resources()->Get<Material>("material");
-	model->shader_ = engine_->Resources()->Get<Program>("phong_shader");
-	Add(std::move(model));
+	//model = engine_->Factory()->Create<Model>(Model::GetClassName());
+	//model->name_ = "model2";
+	//model->engine_ = engine_;
+	//model->scene_ = this;
+	//model->transform_.translation = glm::vec3(0, -2, 0);
+	//model->transform_.scale = glm::vec3(10);
+	//model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/plane.obj");
+	//model->mesh_->material_ = engine_->Resources()->Get<Material>("material");
+	//model->shader_ = engine_->Resources()->Get<Program>("phong_shader");
+	//Add(std::move(model));
 
 	// light
-	for (size_t i = 0; i < MAX_LIGHTS; i++) {
-		auto light = engine_->Factory()->Create<Light>(Light::GetClassName());
-		light->name_ = "light" + i;
-		light->engine_ = engine_;
-		light->scene_ = this;
-		light->Create("light");
-		light->transform_.translation = glm::sphericalRand(2.0f);
-		light->transform_.rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0));
-		light->ambient = glm::vec3(0.0f);
-		light->diffuse = glm::rgbColor(glm::vec3(g_random(360.0f), 1, 1));
-		light->specular = glm::vec3(0);
-		light->cutoff = 30.0f;
-		Add(std::move(light));
-	}
+	auto light = engine_->Factory()->Create<Light>(Light::GetClassName());
+	light->name_ = "light";
+	light->engine_ = engine_;
+	light->scene_ = this;
+	light->Create("light");
+	light->transform_.translation = glm::vec3(0.2f, 1, 0.4f);
+	light->transform_.rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0));
+	light->ambient = glm::vec3(0.3f);
+	light->diffuse = glm::vec3(1);
+	light->specular = glm::vec3(0);
+	light->cutoff = 30.0f;
+	Add(std::move(light));
 
 	// camera
 	auto camera = engine_->Factory()->Create<Camera>(Camera::GetClassName());
@@ -121,17 +124,12 @@ bool MultiLightScene::Create(const Name& name) {
 	return true;
 }
 
-void MultiLightScene::Update() {
+void BumpScene::Update() {
 	Scene::Update();
 
-	auto lights = Get<Light>();
-	size_t index = 0;
-	for (Light* light : lights) {
-		light->transform_.translation = light->transform_.translation * glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
-		
-		std::string lightname = "lights[" + std::to_string(index++) + "]";
-		light->SetShader(lightname, engine_->Resources()->Get<Program>("phong_shader").get());
-	}
+	Light* light = Get<Light>("light");
+	light->transform_.translation = light->transform_.translation * glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 0, 1));
+	light->SetShader(engine_->Resources()->Get<Program>("phong_shader").get());
 
 	GUI::Update(engine_->GetEvent());
 	GUI::Begin(engine_->Get<Renderer>());
@@ -141,7 +139,7 @@ void MultiLightScene::Update() {
 	GUI::End();
 }
 
-void MultiLightScene::Draw() {
+void BumpScene::Draw() {
 	engine_->Get<Renderer>()->ClearBuffer();
 
 	Scene::Draw();

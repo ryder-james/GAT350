@@ -1,10 +1,10 @@
 #pragma once
 #include "../engine/framework/scene.h"
 
-class FXScene : public Scene
+class FrameBufferScene : public Scene
 {
 public:
-	OBJECT_DECLARATION(FXScene, Scene);
+	OBJECT_DECLARATION(FrameBufferScene, Scene);
 
 	bool Create(const Name& name) override;
 	void Update() override;
@@ -15,12 +15,9 @@ public:
 
 	float time_ = 0.0f;
 	float rate_ = 1.0f;
-	float dissolve_ = 0.0f;
 	float amplitude_ = 0.0f;
 	float frequency_ = 0.0f;
 
 	glm::vec2 uv_scale_ = glm::vec2(1);
 	glm::vec2 uv_offset_ = glm::vec2(0);
-
-	glm::vec3 discard_color_ = glm::vec3(0);
 };
