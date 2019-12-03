@@ -78,6 +78,8 @@ bool FrameBufferScene::Create(const Name& name) {
 	material->diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
 	material->specular = glm::vec3(1.0f);
 	material->shininess = 128.0f;
+	texture = engine_->Resources()->Get<Texture>("render_texture");
+	material->textures.push_back(texture);
 	engine_->Resources()->Add("render_material", std::move(material));
 
 	// debug material
@@ -108,10 +110,10 @@ bool FrameBufferScene::Create(const Name& name) {
 	model->name_ = "model2";
 	model->engine_ = engine_;
 	model->scene_ = this;
-	model->transform_.translation = glm::vec3(0, -2, 0);
+	model->transform_.translation = glm::vec3(0, 0, 0);
 	model->transform_.scale = glm::vec3(1);
 	model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/cube.obj");
-	model->mesh_->material_ = engine_->Resources()->Get<Material>("material");
+	model->mesh_->material_ = engine_->Resources()->Get<Material>("render_material");
 	model->shader_ = engine_->Resources()->Get<Program>("phong_shader");
 	Add(std::move(model));
 
@@ -121,9 +123,9 @@ bool FrameBufferScene::Create(const Name& name) {
 	light->engine_ = engine_;
 	light->scene_ = this;
 	light->Create("light");
-	light->transform_.translation = glm::vec3(0.7f, -1, 0.7f);
+	light->transform_.translation = glm::vec3(1, -0.5f, 1);
 	light->transform_.rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0));
-	light->ambient = glm::vec3(0);
+	light->ambient = glm::vec3(0.5f);
 	light->diffuse = glm::vec3(1);
 	light->specular = glm::vec3(1);
 	light->cutoff = 30.0f;
@@ -131,16 +133,31 @@ bool FrameBufferScene::Create(const Name& name) {
 	Add(std::move(light));
 
 	// camera
-	auto camera = engine_->Factory()->Create<Camera>(Camera::GetClassName());
-	camera->name_ = "camera";
-	camera->engine_ = engine_;
-	camera->scene_ = this;
-	camera->Create("camera");
-	camera->transform_.translation = glm::vec3(0.0f, 0.0f, 5.0f);
-	camera->transform_.rotation = glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	camera->SetProjection(45.0f, 1280.0f / 720.0f, 0.01f, 100.0f);
+	{
+		auto camera = engine_->Factory()->Create<Camera>(Camera::GetClassName());
+		camera->name_ = "camera";
+		camera->engine_ = engine_;
+		camera->scene_ = this;
+		camera->user_camera = true;
+		camera->Create("camera");
+		camera->transform_.translation = glm::vec3(0.0f, 0.0f, 5.0f);
+		camera->transform_.rotation = glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		camera->SetProjection(45.0f, 1280.0f / 720.0f, 0.01f, 100.0f);
+		Add(std::move(camera));
+	}
 
-	Add(std::move(camera));
+	{
+		auto camera = engine_->Factory()->Create<Camera>(Camera::GetClassName());
+		camera->name_ = "buffer_camera";
+		camera->engine_ = engine_;
+		camera->scene_ = this;
+		//camera->Create("buffer_camera");
+		camera->transform_.translation = glm::vec3(0.0f, 0.0f, 5.0f);
+		camera->transform_.rotation = glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		camera->SetProjection(45.0f, 1, 0.01f, 100.0f);
+		Add(std::move(camera));
+	}
+
 
 	return true;
 }
@@ -148,8 +165,18 @@ bool FrameBufferScene::Create(const Name& name) {
 void FrameBufferScene::Update() {
 	Scene::Update();
 
+	{
+		auto model = Get<Model>("model1");
+		model->transform_.rotation = model->transform_.rotation * glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, -1, 0));
+	}
+
+	{
+		auto model = Get<Model>("model2");
+		model->transform_.rotation = model->transform_.rotation * glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
+	}
+
 	Light* light = Get<Light>("light");
-	light->transform_.translation = light->transform_.translation * glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
+	//light->transform_.translation = light->transform_.translation * glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
 	light->SetShader(engine_->Resources()->Get<Program>("phong_shader").get());
 
 	GUI::Update(engine_->GetEvent());
@@ -161,10 +188,37 @@ void FrameBufferScene::Update() {
 }
 
 void FrameBufferScene::Draw() {
+	RenderToTexture();
+	RenderToScene();
+
+	//Scene::Draw();
+	GUI::Draw();
+	engine_->Get<Renderer>()->SwapBuffer();
+}
+
+void FrameBufferScene::RenderToTexture() {
+	auto framebuffer = engine_->Resources()->Get<Framebuffer>("framebuffer");
+	framebuffer->Bind();
+
+	SetActive("buffer_camera");
+	engine_->Get<Renderer>()->SetViewport(0, 0, 512, 512);
 	engine_->Get<Renderer>()->ClearBuffer();
 
-	Scene::Draw();
-	GUI::Draw();
+	auto model = Get<Model>("model1");
+	model->Draw();
 
-	engine_->Get<Renderer>()->SwapBuffer();
+	framebuffer->Unbind();
+}
+
+void FrameBufferScene::RenderToScene() {
+	auto renderer = engine_->Get<Renderer>();
+	SetActive("camera");
+	//auto camera = Get<Camera>("camera");
+	//camera->SetProjection(45, static_cast<float>(renderer->GetWidth()) / renderer->GetHeight(), 0.01f, 100);
+
+	renderer->RestoreViewport();
+	renderer->ClearBuffer();
+
+	auto model = Get<Model>("model2");
+	model->Draw();
 }

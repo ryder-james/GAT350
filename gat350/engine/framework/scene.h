@@ -4,7 +4,7 @@
 class Scene : public Object {
 public:
 	OBJECT_DECLARATION(Scene, Object)
-		virtual ~Scene() {}
+	virtual ~Scene() {}
 
 	virtual void Update();
 	virtual void Draw();
@@ -17,6 +17,23 @@ public:
 	T* Get(const Name& name) {
 		for (auto& actor : actors_) {
 			if (actor->name_ == name) {
+				return dynamic_cast<T*>(actor.get());
+			}
+		}
+
+		return nullptr;
+	}
+
+	void SetActive(const Name& name) {
+		for (auto& actor : actors_) {
+			actor->active_ = (actor->name_ == name);
+		}
+	}
+
+	template<typename T>
+	T* GetActive() {
+		for (auto& actor : actors_) {
+			if (actor->active_) {
 				return dynamic_cast<T*>(actor.get());
 			}
 		}

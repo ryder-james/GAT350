@@ -10,6 +10,10 @@ public:
 	void Update() override;
 	void Draw() override;
 
+protected:
+	void RenderToTexture();
+	void RenderToScene();
+
 public:
 	glm::vec3 scale_ = glm::vec3(1);
 
