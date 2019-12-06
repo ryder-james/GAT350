@@ -194,6 +194,9 @@
     <ClCompile Include="engine\renderer\framebuffer.cpp">
       <Filter>source\engine\renderer</Filter>
     </ClCompile>
+    <ClCompile Include="game\shadowmap_scene.cpp">
+      <Filter>source\game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\assert.h">
@@ -340,6 +343,9 @@
     <ClInclude Include="engine\renderer\framebuffer.h">
       <Filter>headers\engine\renderer</Filter>
     </ClInclude>
+    <ClInclude Include="game\shadowmap_scene.h">
+      <Filter>headers\game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="builds\assets\shaders\texture_phong.frag">
@@ -397,6 +403,15 @@
       <Filter>shaders</Filter>
     </None>
     <None Include="builds\assets\shaders\reflection.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="builds\assets\shaders\depth_debug.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="builds\assets\shaders\depth_debug.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="builds\assets\shaders\night_vision.frag">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

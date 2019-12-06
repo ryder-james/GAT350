@@ -20,7 +20,8 @@ bool LightScene::Create(const Name& name) {
 	shader->name_ = "shader";
 	shader->engine_ = engine_;
 	shader->CreateShaderFromFile("shaders/texture_phong.vert", GL_VERTEX_SHADER);
-	shader->CreateShaderFromFile("shaders/texture_phong_light.frag", GL_FRAGMENT_SHADER);
+	shader->CreateShaderFromFile("shaders/night_vision.frag", GL_FRAGMENT_SHADER);
+	//shader->CreateShaderFromFile("shaders/texture_phong.frag", GL_FRAGMENT_SHADER);
 	shader->Link();
 	engine_->Resources()->Add("phong_shader", std::move(shader));
 
@@ -94,7 +95,7 @@ bool LightScene::Create(const Name& name) {
 	light->engine_ = engine_;
 	light->scene_ = this;
 	light->Create("light");
-	light->transform_.translation = glm::vec3(0.2f, 2, 0.2f);
+	light->transform_.translation = glm::vec3(1, 0, 1);
 	light->transform_.rotation = glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0));
 	light->ambient = glm::vec3(0.3f);
 	light->diffuse = glm::vec3(1);

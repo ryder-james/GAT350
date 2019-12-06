@@ -101,7 +101,7 @@ bool CubemapScene::Create(const Name& name) {
 		model->scene_ = this;
 		model->transform_.translation = glm::vec3(0.0f);
 		model->transform_.scale = glm::vec3(1);
-		model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/suzanne.obj");
+		model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/sphere.obj");
 		model->mesh_->material_ = engine_->Resources()->Get<Material>("cube_material");
 		model->shader_ = engine_->Resources()->Get<Program>("reflection_shader");
 		Add(std::move(model));
@@ -129,6 +129,7 @@ bool CubemapScene::Create(const Name& name) {
 		camera->name_ = "camera";
 		camera->engine_ = engine_;
 		camera->scene_ = this;
+		camera->user_camera_ = true;
 		camera->Create("camera");
 		camera->transform_.translation = glm::vec3(0.0f, 0.0f, 5.0f);
 		camera->transform_.rotation = glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -147,13 +148,19 @@ void CubemapScene::Update() {
 	light->transform_.translation = light->transform_.translation * glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
 	light->SetShader(engine_->Resources()->Get<Program>("phong_shader").get());
 
-
 	Model* model = Get<Model>("model2");
 	model->transform_.rotation = model->transform_.rotation * glm::angleAxis(glm::radians(45.0f) * g_timer.dt, glm::vec3(0, 1, 0));
+
+	auto fx_shader = engine_->Resources()->Get<Program>("reflection_shader");
+	light->SetShader(fx_shader.get());
+	fx_shader->SetUniform("mixer", mix_);
+	fx_shader->SetUniform("refraction_index", index_);
 
 	GUI::Update(engine_->GetEvent());
 	GUI::Begin(engine_->Get<Renderer>());
 
+	ImGui::SliderFloat("Refraction/Reflection Mix", &mix_, 0, 1);
+	ImGui::SliderFloat("Refraction Index", &index_, 1, 3);
 	engine_->Get<Editor>()->UpdateGUI();
 
 	GUI::End();
