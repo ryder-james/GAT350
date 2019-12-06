@@ -13,8 +13,8 @@ bool Texture::Create(const Name& name) {
 	return true;
 }
 
-void Texture::CreateTexture(const std::string& filename, GLenum type, GLuint unit) {
-	type_ = type;
+void Texture::CreateTexture(const std::string& filename, GLenum target, GLuint unit) {
+	target_ = target;
 	unit_ = unit;
 
 	int width, height, channels;
@@ -23,13 +23,13 @@ void Texture::CreateTexture(const std::string& filename, GLenum type, GLuint uni
 	ASSERT(data);
 
 	glGenTextures(1, &texture_);
-	glBindTexture(type, texture_);
+	glBindTexture(target, texture_);
 
 	GLenum format = (channels == 4) ? GL_RGBA : GL_RGB;
-	glTexImage2D(type, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(target, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 
-	glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 #ifdef STB_IMAGE_IMPLEMENTATION
 	stbi_image_free(data);
@@ -38,21 +38,23 @@ void Texture::CreateTexture(const std::string& filename, GLenum type, GLuint uni
 #endif
 }
 
-void Texture::CreateTexture(u32 width, u32 height, GLenum format, GLenum type, GLuint unit) {
-	type_ = type;
+void Texture::CreateTexture(u32 width, u32 height, GLenum target, GLenum format, GLuint unit) {
+	target_ = target;
 	unit_ = unit;
 
 	glGenTextures(1, &texture_);
-	glBindTexture(type, texture_);
+	glBindTexture(target, texture_);
 
-	glTexImage2D(type, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
+	GLenum data_type = (GL_DEPTH_COMPONENT) ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
-	glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexImage2D(target, 0, format, width, height, 0, format, data_type, nullptr);
+
+	glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 void Texture::CreateCubeTexture(const std::vector<std::string>& filenames, GLuint unit) {
-	type_ = GL_TEXTURE_CUBE_MAP;
+	target_ = GL_TEXTURE_CUBE_MAP;
 	unit_ = unit;
 
 	glGenTextures(1, &texture_);
@@ -85,7 +87,7 @@ void Texture::CreateCubeTexture(const std::vector<std::string>& filenames, GLuin
 
 void Texture::Bind() {
 	glActiveTexture(unit_);
-	glBindTexture(type_, texture_);
+	glBindTexture(target_, texture_);
 }
 
 std::vector<std::string> Texture::GenerateCubeMapNames(const std::string& basename, const std::vector<std::string>& suffixes, const std::string& extension) {

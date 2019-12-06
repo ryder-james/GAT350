@@ -21,7 +21,7 @@ bool Camera::Create(const Name& name) {
 }
 
 void Camera::Update() {
-	if (user_camera) {
+	if (user_camera_) {
 		glm::vec3 rotation(0);
 
 		if (engine_->Get <Input>()->GetButton("camera_orbit", Input::HELD)) {

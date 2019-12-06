@@ -3,7 +3,9 @@
 layout (location = 0) in vec3 vposition;
 layout (location = 1) in vec3 vnormal;
 
-out vec3 ftexcoord;
+out vec3 freflection;
+out vec3 frefraction;
+out float mixer;
 
 uniform vec3 camera_position;
 uniform mat4 model_matrix;
@@ -14,6 +16,8 @@ void main() {
 	vec3 normal = vec3(model_matrix * vec4(vnormal, 1.0));
 	vec3 view = normalize(camera_position - position);
 
-	ftexcoord = reflect(-view, normal);
+	freflection = reflect(-view, normal);
+	frefraction = refract(-view, normal, 1.386);
+
 	gl_Position = mvp_matrix * vec4(vposition, 1.0);
 }

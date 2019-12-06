@@ -24,16 +24,18 @@ public:
 		return nullptr;
 	}
 
+	template<typename T>
 	void SetActive(const Name& name) {
 		for (auto& actor : actors_) {
-			actor->active_ = (actor->name_ == name);
+			if (dynamic_cast<T*>(actor.get()))
+				actor->active_ = (actor->name_ == name);
 		}
 	}
 
 	template<typename T>
 	T* GetActive() {
 		for (auto& actor : actors_) {
-			if (actor->active_) {
+			if (actor->active_ && dynamic_cast<T*>(actor.get())) {
 				return dynamic_cast<T*>(actor.get());
 			}
 		}

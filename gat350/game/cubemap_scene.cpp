@@ -101,7 +101,7 @@ bool CubemapScene::Create(const Name& name) {
 		model->scene_ = this;
 		model->transform_.translation = glm::vec3(0.0f);
 		model->transform_.scale = glm::vec3(1);
-		model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/suzanne.obj");
+		model->mesh_ = engine_->Resources()->Get<Mesh>("meshes/sphere.obj");
 		model->mesh_->material_ = engine_->Resources()->Get<Material>("cube_material");
 		model->shader_ = engine_->Resources()->Get<Program>("reflection_shader");
 		Add(std::move(model));
@@ -129,6 +129,7 @@ bool CubemapScene::Create(const Name& name) {
 		camera->name_ = "camera";
 		camera->engine_ = engine_;
 		camera->scene_ = this;
+		camera->user_camera_ = true;
 		camera->Create("camera");
 		camera->transform_.translation = glm::vec3(0.0f, 0.0f, 5.0f);
 		camera->transform_.rotation = glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));

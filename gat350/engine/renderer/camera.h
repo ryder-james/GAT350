@@ -19,5 +19,5 @@ public:
 	float near_clip;
 	float far_clip;
 
-	bool user_camera = false;
+	bool user_camera_ = false;
 };
