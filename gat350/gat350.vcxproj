@@ -236,6 +236,7 @@
     <None Include="builds\assets\shaders\depth_debug.vert" />
     <None Include="builds\assets\shaders\gouraud.frag" />
     <None Include="builds\assets\shaders\gouraud.vert" />
+    <None Include="builds\assets\shaders\night_vision.frag" />
     <None Include="builds\assets\shaders\reflection.frag" />
     <None Include="builds\assets\shaders\reflection.vert" />
     <None Include="builds\assets\shaders\skybox.frag" />

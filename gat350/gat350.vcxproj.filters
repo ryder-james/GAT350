@@ -411,5 +411,8 @@
     <None Include="builds\assets\shaders\depth_debug.vert">
       <Filter>shaders</Filter>
     </None>
+    <None Include="builds\assets\shaders\night_vision.frag">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

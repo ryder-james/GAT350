@@ -4,6 +4,7 @@
 #include "multi_light_scene.h"
 #include "framebuffer_scene.h"
 #include "shadowmap_scene.h"
+#include "light_scene.h"
 
 #include "../engine/engine.h"
 #include "../engine/editor/editor.h"
@@ -13,6 +14,8 @@ int main(int argc, char** argv) {
 	engine->Initialize();
 
 	std::unique_ptr<Scene> scene = std::make_unique<CubemapScene>(CubemapScene::GetClassName(), engine.get());
+	//std::unique_ptr<Scene> scene = std::make_unique<LightScene>(LightScene::GetClassName(), engine.get());
+	//std::unique_ptr<Scene> scene = std::make_unique<ShadowMapScene>(ShadowMapScene::GetClassName(), engine.get());
 	scene->Create("scene");
 
 	engine->Get<Editor>()->scene_ = scene.get();
